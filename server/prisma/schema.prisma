@@ -1,0 +1,83 @@
+// Prisma Schema for "AI-POWERED SAAS PLATFORM BASED ON GENERATIVE AI"
+// B.Tech Major Project Database Architecture
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid()) @map("user_id")
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  generations AiGeneration[]
+  documents   Document[]
+  histories   History[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model AiGeneration {
+  id        String   @id @default(uuid()) @map("generation_id")
+  userId    String   @map("user_id")
+  toolType  String   @map("tool_type") // text, image, document, resume, article, title
+  prompt    String   @db.Text
+  result    String   @db.Text
+  provider  String   @default("gemini") // openai, gemini, groq, dall-e, simulation
+  metadata  Json?    // Optional structured metadata (tone, style, tokens, etc.)
+  createdAt DateTime @default(now()) @map("timestamp")
+
+  // Relationships
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  histories History[]
+
+  @@index([userId])
+  @@index([toolType])
+  @@index([createdAt])
+  @@map("ai_generations")
+}
+
+model Document {
+  id            String   @id @default(uuid()) @map("document_id")
+  userId        String   @map("user_id")
+  fileName      String   @map("file_name")
+  filePath      String   @map("file_path")
+  fileType      String   @map("file_type") // pdf, docx, txt
+  fileSize      Int      @map("file_size") // bytes
+  extractedText String   @db.Text @map("extracted_text")
+  analysis      Json?    // Cached analysis summaries, keypoints, etc.
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([uploadedAt])
+  @@map("documents")
+}
+
+model History {
+  id           String   @id @default(uuid()) @map("history_id")
+  userId       String   @map("user_id")
+  generationId String   @map("generation_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relationships
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generation AiGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([generationId])
+  @@index([createdAt])
+  @@map("history")
+}
