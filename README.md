@@ -313,9 +313,4 @@ node server/test-local-ai.js
 
 ---
 
-## 🎓 8. Developer & Project Details
 
-- **Developer:** **KUNWAR KANTIKEYA GAUTAM**
-- **Email:** `kunwarkantikeyagautam@gmail.com`
-- **Project:** B.Tech Major Project — “AI-POWERED SAAS PLATFORM BASED ON GENERATIVE AI”
-- **Demo Credentials:** `kunwarkantikeyagautam@gmail.com` / `Password@123`
