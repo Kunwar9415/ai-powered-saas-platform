@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Sparkles, ChevronDown, Plus, Info, Check, Zap } from 'lucide-react';
+import { Menu, Sparkles, ChevronDown, Plus, Info, Check, Zap, Cpu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -7,13 +7,13 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [modelDropdown, setModelDropdown] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('Groq Cloud (GPT-OSS 120B)');
+  const [selectedModel, setSelectedModel] = useState('CustomTransformerLM-v1 (PyTorch)');
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   const models = [
-    { name: 'Groq Cloud (GPT-OSS 120B)', tag: 'Ultra-Fast LPU • Active Key', icon: '⚡', id: 'groq' },
-    { name: 'Google Gemini (3.6 Flash)', tag: 'Multimodal Reasoning • Active Key', icon: '✨', id: 'gemini' },
-    { name: 'OpenAI GPT-4o Mini', tag: 'Synthesis & Code', icon: '🧠', id: 'openai' },
+    { name: 'CustomTransformerLM-v1 (PyTorch)', tag: 'Custom Causal LM • 3.4M Params', icon: '🧠', id: 'custom_lm' },
+    { name: 'DocumentClassifierNet-v1', tag: 'Custom Classifier & Extractor', icon: '📄', id: 'custom_doc' },
+    { name: 'ResumeDomainClassifierNet-v1', tag: 'Custom Domain & ATS Screener', icon: '📋', id: 'custom_resume' },
   ];
 
   return (
@@ -34,7 +34,7 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
               onClick={() => setModelDropdown(!modelDropdown)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-800 transition-all shadow-sm"
             >
-              <Zap className="w-3.5 h-3.5 text-purple-600" />
+              <Cpu className="w-3.5 h-3.5 text-purple-600" />
               <span>{selectedModel}</span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
             </button>
@@ -42,7 +42,7 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
             {modelDropdown && (
               <div className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-1.5 z-50 animate-in fade-in zoom-in-95">
                 <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  Active Model Routing
+                  Custom Trained Models
                 </div>
                 {models.map((m) => (
                   <button
@@ -51,17 +51,15 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
                       setSelectedModel(m.name);
                       setModelDropdown(false);
                     }}
-                    className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left text-xs transition-colors ${
-                      selectedModel === m.name
-                        ? 'bg-purple-50 text-purple-900 font-semibold border border-purple-200'
-                        : 'text-slate-700 hover:bg-slate-50'
+                    className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-colors ${
+                      selectedModel === m.name ? 'bg-purple-50 text-purple-700' : 'hover:bg-slate-50 text-slate-700'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2">
                       <span className="text-sm">{m.icon}</span>
                       <div>
-                        <p className="font-semibold text-slate-900">{m.name}</p>
-                        <p className="text-[10px] text-slate-500">{m.tag}</p>
+                        <div className="text-xs font-bold leading-none">{m.name}</div>
+                        <div className="text-[10px] text-slate-400 mt-1">{m.tag}</div>
                       </div>
                     </div>
                     {selectedModel === m.name && <Check className="w-3.5 h-3.5 text-purple-600" />}
@@ -76,7 +74,7 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Groq & Gemini Active</span>
+            <span>Custom PyTorch AI Online</span>
           </div>
 
           <Link
@@ -136,12 +134,12 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
                 <span className="font-bold text-purple-700">KUNWAR KANTIKEYA GAUTAM</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-slate-500 block text-[11px]">Active AI Engines</span>
-                <span className="text-emerald-700 font-bold">Groq Cloud (GPT-OSS 120B) & Google Gemini (3.6 Flash)</span>
+                <span className="text-slate-500 block text-[11px]">Active AI Engine</span>
+                <span className="text-emerald-700 font-bold">Custom PyTorch Models (FastAPI :8000) - No External APIs</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <span className="text-slate-500 block text-[11px]">Architecture</span>
-                <span className="text-slate-800">React + Vite + Node.js/Express + PostgreSQL (Prisma ORM)</span>
+                <span className="text-slate-800">React + Vite + Node.js/Express + Python FastAPI + PostgreSQL (Prisma ORM)</span>
               </div>
             </div>
             <div className="pt-2 flex justify-end">

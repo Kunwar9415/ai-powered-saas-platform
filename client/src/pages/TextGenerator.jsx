@@ -12,8 +12,8 @@ export const TextGenerator = () => {
   const messagesEndRef = useRef(null);
 
   const [prompt, setPrompt] = useState('');
-  const [provider, setProvider] = useState('ollama');
-  const [modelName, setModelName] = useState('gpt-oss:20b');
+  const [provider, setProvider] = useState('custom_ai');
+  const [modelName, setModelName] = useState('CustomTransformerLM-v1');
   const [temperature, setTemperature] = useState(0.7);
   const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -24,7 +24,7 @@ export const TextGenerator = () => {
   useEffect(() => {
     if (location.state?.prefilledPrompt) {
       const p = location.state.prefilledPrompt;
-      const prov = location.state.prefilledProvider || 'ollama';
+      const prov = location.state.prefilledProvider || 'custom_ai';
       setProvider(prov);
       setPrompt(p);
       executeGeneration(p, prov);
@@ -115,7 +115,7 @@ export const TextGenerator = () => {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-xl border border-purple-200 text-xs font-semibold shadow-sm">
             <Server className="w-3.5 h-3.5 text-purple-600" />
-            <span>Local Ollama</span>
+            <span>Custom PyTorch LM</span>
             <span className="text-purple-400 font-mono">({modelName})</span>
           </div>
 
@@ -124,9 +124,7 @@ export const TextGenerator = () => {
             onChange={(e) => setModelName(e.target.value)}
             className="bg-white text-xs font-semibold text-slate-700 rounded-xl px-3 py-1.5 border border-slate-200 shadow-sm focus:outline-none cursor-pointer"
           >
-            <option value="gpt-oss:20b">🖥️ gpt-oss:20b (Primary Local Open-Weight)</option>
-            <option value="llama3:latest">🦙 llama3:latest (Local Alternative)</option>
-            <option value="mistral:latest">⚡ mistral:latest (Local Alternative)</option>
+            <option value="CustomTransformerLM-v1">🧠 CustomTransformerLM-v1 (Custom Causal LM)</option>
           </select>
 
           <button
@@ -172,9 +170,9 @@ export const TextGenerator = () => {
             <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shadow-sm">
               <HardDrive className="w-6 h-6 text-purple-600" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Local AI Inference Studio</h3>
+            <h3 className="text-base font-bold text-slate-900">Custom Neural LM Studio</h3>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              Running locally on your machine via <strong>Ollama HTTP Runtime ({modelName})</strong>. Zero cloud dependencies, complete privacy, and full offline inference.
+              Running locally via <strong>PyTorch Transformer ({modelName})</strong>. Trained from scratch with random weight initialization, zero external APIs, and complete privacy.
             </p>
           </div>
         ) : (
@@ -225,7 +223,7 @@ export const TextGenerator = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-purple-700 font-bold flex items-center gap-1">
                           <Server className="w-3 h-3" />
-                          LOCAL OLLAMA ({msg.model})
+                          CUSTOM AI ({msg.model})
                         </span>
                         {msg.latency && <span className="text-slate-400">• {msg.latency}</span>}
                       </div>
@@ -265,7 +263,7 @@ export const TextGenerator = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div className="chat-bubble-ai p-3 px-4 shadow-sm">
-              <LoadingSpinner message={`Ollama local inference (${modelName})...`} size="sm" />
+              <LoadingSpinner message={`Custom PyTorch inference (${modelName})...`} size="sm" />
             </div>
           </div>
         )}

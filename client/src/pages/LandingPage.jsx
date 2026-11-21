@@ -4,7 +4,6 @@ import {
   Sparkles,
   Zap,
   MessageSquare,
-  Image as ImageIcon,
   FileText,
   UserCheck,
   BookOpen,
@@ -29,26 +28,18 @@ export const LandingPage = () => {
   const capabilities = [
     {
       title: 'Chat & Text Generation',
-      desc: 'Conversational reasoning, prompt engineering, and code synthesis powered by local Ollama runtime (gpt-oss:20b).',
+      desc: 'Conversational reasoning, technical drafting, and prompt processing powered by our custom-trained PyTorch language model.',
       icon: MessageSquare,
       path: '/text-generator',
-      badge: 'Local Ollama Engine',
+      badge: 'Custom PyTorch LM',
       category: 'Language',
     },
     {
-      title: 'Image Synthesis Studio',
-      desc: 'Generate photorealistic visuals, 3D render concept designs, and digital art with a modular vision architecture.',
-      icon: ImageIcon,
-      path: '/image-generator',
-      badge: 'Modular Vision Suite',
-      category: 'Vision',
-    },
-    {
       title: 'Document Intelligence',
-      desc: 'Upload PDF and Word DOCX research papers for instant executive summaries and key takeaway extraction.',
+      desc: 'Upload PDF and Word DOCX research papers for instant classification, key sentence extraction, and summaries.',
       icon: FileText,
       path: '/document-analyzer',
-      badge: 'Local PDF / DOCX',
+      badge: 'Custom Document Model',
       category: 'Analysis',
     },
     {
@@ -80,15 +71,15 @@ export const LandingPage = () => {
   const features = [
     {
       title: 'One Login for Everything',
-      desc: 'Access conversational language reasoning, modular image generation, document intelligence, and content creation in one unified full-stack SaaS workspace.',
+      desc: 'Access custom text generation, document intelligence, resume analysis, and structured content creation in one unified full-stack SaaS workspace.',
       icon: Layers,
       highlight: 'Unified Workspace',
     },
     {
-      title: 'Local Ollama Inference Layer',
-      desc: 'Powered by an on-premise Ollama runtime running open-weight model gpt-oss:20b. Complete data privacy, zero API quotas, and fast local execution.',
+      title: 'Custom-Trained AI Inference Layer',
+      desc: 'Powered by our own PyTorch models trained from scratch with random weight initialization. Zero external APIs, zero downloaded pretrained weights, and complete privacy.',
       icon: Server,
-      highlight: 'On-Premise Privacy',
+      highlight: 'Custom Neural Models',
     },
     {
       title: 'Unified PostgreSQL Vault & History',
@@ -97,10 +88,10 @@ export const LandingPage = () => {
       highlight: 'PostgreSQL Relational Storage',
     },
     {
-      title: 'Three-Tier Modular Architecture',
-      desc: 'Presentation Layer (React + Tailwind), Application Layer (Node.js + Express), Local Inference Layer (Ollama + gpt-oss:20b), and Data Layer (PostgreSQL).',
+      title: 'Layered Modular Architecture',
+      desc: 'Presentation Layer (React + Tailwind), Application Layer (Node.js + Express), Custom AI Layer (PyTorch + FastAPI), and Data Layer (PostgreSQL).',
       icon: ShieldCheck,
-      highlight: 'Three-Tier Architecture',
+      highlight: 'Layered Architecture',
     },
   ];
 
@@ -108,7 +99,7 @@ export const LandingPage = () => {
     {
       step: '01',
       title: 'Choose AI Tool & Model',
-      desc: 'Select your workspace from the menu (Chat, Vision, Document, Resume, Article, or Headline Ideator).',
+      desc: 'Select your workspace from the menu (Chat & Text Gen, Document Intelligence, Resume ATS Screener, Article, or Headline Ideator).',
     },
     {
       step: '02',
@@ -117,8 +108,8 @@ export const LandingPage = () => {
     },
     {
       step: '03',
-      title: 'Local Inference Execution',
-      desc: 'Requests are processed locally on your server by Ollama executing the open-weight gpt-oss:20b model.',
+      title: 'Custom Neural Model Execution',
+      desc: 'Requests are processed locally on your machine by our custom PyTorch model checkpoints served via Python FastAPI.',
     },
     {
       step: '04',
@@ -228,14 +219,14 @@ export const LandingPage = () => {
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-            Local Generative AI SaaS, <br />
+            Custom Generative AI SaaS, <br />
             <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 bg-clip-text text-transparent">
-              powered by Ollama & PostgreSQL
+              powered by PyTorch & PostgreSQL
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-            A full-stack SaaS platform uniting conversational reasoning, document intelligence, resume ATS screening, long-form writing, and visual synthesis running on your local server.
+            A full-stack SaaS platform uniting custom-trained text generation, document intelligence, and resume ATS screening powered by our own neural models.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
@@ -266,7 +257,7 @@ export const LandingPage = () => {
                 </div>
                 <div className="flex items-center gap-2 text-[11px] font-mono text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse"></span>
-                  <span>🖥️ Local Ollama Runtime (gpt-oss:20b)</span>
+                  <span>🧠 Custom PyTorch AI Server (FastAPI :8000)</span>
                 </div>
               </div>
 
@@ -278,7 +269,7 @@ export const LandingPage = () => {
                     <span>Language Reasoning</span>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Local text generation and code synthesis via Ollama HTTP interface.
+                    Custom-trained causal transformer language model with self-attention.
                   </p>
                 </div>
 
@@ -404,10 +395,10 @@ export const LandingPage = () => {
               Execution Lifecycle
             </h2>
             <h3 className="text-3xl font-extrabold tracking-tight">
-              How Local AI Inference Works
+              How Custom AI Inference Works
             </h3>
             <p className="text-sm text-slate-400">
-              Step-by-step workflow from user prompt to local Ollama inference and PostgreSQL persistence.
+              Step-by-step workflow from user prompt to custom PyTorch model inference and PostgreSQL persistence.
             </p>
           </div>
 

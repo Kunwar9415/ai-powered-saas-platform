@@ -1,0 +1,14 @@
+{
+  "accuracy": 100.0,
+  "loss": 0.0025,
+  "domains": [
+    "Full-Stack Web Development",
+    "Machine Learning & Data Science",
+    "Cloud Engineering & DevOps",
+    "Cybersecurity & Infrastructure",
+    "Mobile App Development",
+    "Product & Engineering Management"
+  ],
+  "sample_count": 6,
+  "parameters": 49350
+}

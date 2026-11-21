@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   MessageSquare,
-  Image as ImageIcon,
   FileText,
   UserCheck,
   BookOpen,
@@ -26,7 +25,6 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
   const navItems = [
     { label: 'Overview', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Chat & Text Gen', path: '/text-generator', icon: MessageSquare },
-    { label: 'Image Studio', path: '/image-generator', icon: ImageIcon },
     { label: 'Document Intelligence', path: '/document-analyzer', icon: FileText },
     { label: 'Resume ATS Screener', path: '/resume-analyzer', icon: UserCheck },
     { label: 'Article Writer', path: '/article-generator', icon: BookOpen },

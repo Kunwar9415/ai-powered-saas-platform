@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare,
-  Image as ImageIcon,
   FileText,
   UserCheck,
   BookOpen,
@@ -52,26 +51,18 @@ export const Dashboard = () => {
   const capabilities = [
     {
       title: 'Chat & Language Reasoning',
-      desc: 'Local code synthesis, debugging, and conversational logic via Ollama (gpt-oss:20b).',
+      desc: 'Local text synthesis, prompt engineering, and conversational logic via our Custom Trained Language Model.',
       icon: MessageSquare,
       path: '/text-generator',
-      badge: 'Local Ollama',
+      badge: 'Custom LM',
       color: 'bg-purple-50 text-purple-700',
     },
     {
-      title: 'Generative Image Studio',
-      desc: 'Modular visual synthesizer producing concept art and renders in HD square formats.',
-      icon: ImageIcon,
-      path: '/image-generator',
-      badge: 'Vision Suite',
-      color: 'bg-pink-50 text-pink-700',
-    },
-    {
       title: 'Document Intelligence',
-      desc: 'Summarize, query, and extract insights from research PDFs & DOCX papers locally.',
+      desc: 'Summarize, classify, and extract key insights from research PDFs & DOCX papers locally.',
       icon: FileText,
       path: '/document-analyzer',
-      badge: 'Local PDF / DOCX',
+      badge: 'Custom Classifier',
       color: 'bg-indigo-50 text-indigo-700',
     },
     {
@@ -123,13 +114,13 @@ export const Dashboard = () => {
       <div className="text-center space-y-2.5 pt-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-semibold mb-1">
           <Server className="w-3.5 h-3.5 text-purple-600" />
-          <span>Local Ollama Inference Engine (gpt-oss:20b) Active</span>
+          <span>Custom Trained AI Inference Server (PyTorch FastAPI) Active</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
           Hello, <span className="text-purple-600">{user?.name?.split(' ')[0] || 'Kunwar'}</span>
         </h1>
         <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-          What would you like to build, analyze, or synthesize with your local AI today?
+          Generate text, analyze documents, and audit resumes with your custom-trained AI models.
         </p>
       </div>
 
@@ -158,7 +149,7 @@ export const Dashboard = () => {
                 onChange={(e) => setSelectedProvider(e.target.value)}
                 className="bg-slate-50 text-xs font-semibold text-slate-700 rounded-xl px-3 py-1.5 border border-slate-200 focus:outline-none cursor-pointer hover:bg-slate-100 transition-colors"
               >
-                <option value="ollama">🖥️ Local Ollama (gpt-oss:20b)</option>
+                <option value="custom_ai">🧠 Custom Trained LM (PyTorch)</option>
               </select>
 
               <button
@@ -202,7 +193,7 @@ export const Dashboard = () => {
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Specialized Workspaces (Horizontal Suite)
           </h3>
-          <span className="text-[11px] font-semibold text-purple-700">6 Active Tools</span>
+          <span className="text-[11px] font-semibold text-purple-700">5 Active Tools</span>
         </div>
 
         <div className="space-y-3">

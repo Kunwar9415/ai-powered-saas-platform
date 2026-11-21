@@ -13,7 +13,7 @@ export const documentService = {
     return response.data;
   },
 
-  async analyzeDocument({ documentId, rawText, fileName, mode = 'summarize', provider = 'ollama' }) {
+  async analyzeDocument({ documentId, rawText, fileName, mode = 'summarize', provider = 'custom_ai' }) {
     const response = await api.post('/documents/analyze', {
       documentId,
       rawText,

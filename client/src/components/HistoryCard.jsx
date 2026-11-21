@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   MessageSquare,
-  Image as ImageIcon,
   FileText,
   UserCheck,
   BookOpen,
@@ -17,7 +16,6 @@ export const HistoryCard = ({ historyItem, onView, onDelete }) => {
 
   const toolIcons = {
     text: { icon: MessageSquare, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' },
-    image: { icon: ImageIcon, color: 'text-pink-700', bg: 'bg-pink-50', border: 'border-pink-200' },
     document: { icon: FileText, color: 'text-indigo-700', bg: 'bg-indigo-50', border: 'border-indigo-200' },
     resume: { icon: UserCheck, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
     article: { icon: BookOpen, color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' },
@@ -36,9 +34,7 @@ export const HistoryCard = ({ historyItem, onView, onDelete }) => {
   });
 
   const previewResult =
-    generation.toolType === 'image'
-      ? 'Generated AI Image Output'
-      : typeof generation.result === 'string'
+    typeof generation.result === 'string'
       ? generation.result.substring(0, 140).replace(/[\n\r]+/g, ' ') + '...'
       : 'Structured Analysis Output';
 

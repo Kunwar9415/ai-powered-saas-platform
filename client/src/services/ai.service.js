@@ -2,7 +2,7 @@ import api from './api';
 
 export const aiService = {
   /**
-   * Health and status check for Local AI Server (Ollama)
+   * Health and status check for Custom AI Server (FastAPI)
    */
   async getStatus() {
     const response = await api.get('/ai/status');
@@ -19,7 +19,7 @@ export const aiService = {
 
   /**
    * Primary standardized text generation endpoint
-   * React -> Express API -> localAIService -> Ollama -> gpt-oss-20b
+   * React -> Express API -> localAIService -> Python FastAPI -> CustomTransformerLM-v1
    */
   async generate({ prompt, systemPrompt, temperature, maxTokens, model }) {
     const response = await api.post('/ai/generate', {
@@ -35,7 +35,7 @@ export const aiService = {
   /**
    * Text / Chat generation
    */
-  async generateText({ prompt, provider = 'ollama', systemPrompt, temperature, maxTokens, model }) {
+  async generateText({ prompt, provider = 'custom_ai', systemPrompt, temperature, maxTokens, model }) {
     const response = await api.post('/ai/generate-text', {
       prompt,
       provider,
@@ -47,22 +47,11 @@ export const aiService = {
     return response.data;
   },
 
-  /**
-   * Modular visual synthesis
-   */
-  async generateImage({ prompt, style = 'Photorealistic', size = '1024x1024' }) {
-    const response = await api.post('/ai/generate-image', {
-      prompt,
-      style,
-      size,
-    });
-    return response.data;
-  },
 
   /**
-   * Long-form article generator via local model
+   * Long-form article generator via custom model
    */
-  async generateArticle({ topic, tone, length, keywords, provider = 'ollama' }) {
+  async generateArticle({ topic, tone, length, keywords, provider = 'custom_ai' }) {
     const response = await api.post('/ai/generate-article', {
       topic,
       tone,
@@ -74,9 +63,9 @@ export const aiService = {
   },
 
   /**
-   * Headline and hook ideation via local model
+   * Headline and hook ideation via custom model
    */
-  async generateTitles({ topic, description, contentType, provider = 'ollama' }) {
+  async generateTitles({ topic, description, contentType, provider = 'custom_ai' }) {
     const response = await api.post('/ai/generate-titles', {
       topic,
       description,

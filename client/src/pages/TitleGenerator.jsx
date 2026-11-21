@@ -10,7 +10,7 @@ export const TitleGenerator = () => {
   const [topic, setTopic] = useState('');
   const [description, setDescription] = useState('');
   const [contentType, setContentType] = useState('Blog Post / Article');
-  const [provider, setProvider] = useState('ollama');
+  const [provider, setProvider] = useState('custom_ai');
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -87,13 +87,13 @@ export const TitleGenerator = () => {
             AI Headline & Title Ideator
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-            Generate high-converting titles, SEO headlines, and newsletter subjects with local Ollama inference.
+            Generate high-converting titles, SEO headlines, and newsletter subjects with our custom-trained transformer model.
           </p>
         </div>
 
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-xl border border-purple-200 text-xs font-semibold shadow-sm">
           <Server className="w-3.5 h-3.5 text-purple-600" />
-          <span>Local Ollama (gpt-oss:20b)</span>
+          <span>Custom Transformer LM (PyTorch)</span>
         </div>
       </div>
 
@@ -150,7 +150,7 @@ export const TitleGenerator = () => {
           {isLoading ? (
             <>
               <Sparkles className="w-4 h-4 animate-spin" />
-              <span>Generating Viral Hooks with Local Ollama...</span>
+              <span>Generating Viral Hooks with Custom Neural Model...</span>
             </>
           ) : (
             <>

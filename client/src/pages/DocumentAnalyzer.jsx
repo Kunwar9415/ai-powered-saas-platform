@@ -10,7 +10,7 @@ import ErrorMessage from '../components/ErrorMessage';
 export const DocumentAnalyzer = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [analysisMode, setAnalysisMode] = useState('summarize');
-  const [provider, setProvider] = useState('ollama');
+  const [provider, setProvider] = useState('custom_ai');
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -43,7 +43,7 @@ export const DocumentAnalyzer = () => {
         throw new Error('Failed to retrieve uploaded document record.');
       }
 
-      toast.info('Analyzing with local Ollama engine (gpt-oss:20b)...');
+      toast.info('Analyzing with custom neural document classifier...');
       const analyzeRes = await documentService.analyzeDocument({
         documentId: doc.id,
         mode: analysisMode,
@@ -52,7 +52,7 @@ export const DocumentAnalyzer = () => {
 
       if (analyzeRes.data?.analysis) {
         setAnalysisResult(analyzeRes.data.analysis);
-        toast.success('Document analyzed successfully via local AI model!');
+        toast.success('Document analyzed successfully via custom AI model!');
         confetti({ particleCount: 50, spread: 60 });
       }
     } catch (err) {
@@ -73,14 +73,14 @@ export const DocumentAnalyzer = () => {
             Document Intelligence
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Upload PDF, DOCX, or TXT documents for instant AI summarization and entity extraction via local Ollama.
+            Upload PDF, DOCX, or TXT documents for instant domain classification and key takeaways via our custom neural model.
           </p>
         </div>
 
         {/* Local Engine Badge */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-xl border border-purple-200 text-xs font-semibold shadow-sm self-start sm:self-auto">
           <Server className="w-3.5 h-3.5 text-purple-600" />
-          <span>Local Ollama (gpt-oss:20b)</span>
+          <span>Custom Neural Model (PyTorch)</span>
         </div>
       </div>
 
@@ -129,11 +129,11 @@ export const DocumentAnalyzer = () => {
           {isLoading ? (
             <>
               <Sparkles className="w-4 h-4 animate-spin" />
-              <span>Analyzing Document via Local Ollama...</span>
+              <span>Analyzing Document via Custom AI Model...</span>
             </>
           ) : (
             <>
-              <span>Run Local Document Intelligence</span>
+              <span>Run Custom Document Intelligence</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}

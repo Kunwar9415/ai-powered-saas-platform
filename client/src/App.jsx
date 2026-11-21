@@ -15,7 +15,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import TextGenerator from './pages/TextGenerator';
-import ImageGenerator from './pages/ImageGenerator';
 import DocumentAnalyzer from './pages/DocumentAnalyzer';
 import ResumeAnalyzer from './pages/ResumeAnalyzer';
 import ArticleGenerator from './pages/ArticleGenerator';
@@ -87,16 +86,7 @@ export const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/image-generator"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ImageGenerator />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/document-analyzer"
             element={

@@ -12,7 +12,7 @@ export const ArticleGenerator = () => {
   const [tone, setTone] = useState('Authoritative & Technical');
   const [length, setLength] = useState('Medium (~1000 words)');
   const [keywords, setKeywords] = useState('');
-  const [provider, setProvider] = useState('ollama');
+  const [provider, setProvider] = useState('custom_ai');
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -89,8 +89,8 @@ export const ArticleGenerator = () => {
   };
 
   const exampleTopics = [
-    'Three-Tier Web Architecture with Local Generative AI Inference Layer',
-    'Deploying Open-Weight LLMs (gpt-oss:20b) with Ollama and Node.js',
+    'Three-Tier Web Architecture with Custom PyTorch AI Inference Layer',
+    'Deep Dive into Transformer Self-Attention and Neural Language Modeling',
     'PostgreSQL Schema Design and Optimization for Multi-Tenant AI SaaS Platforms',
   ];
 
@@ -107,14 +107,14 @@ export const ArticleGenerator = () => {
             Article & Technical Writer
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-            Draft structured, long-form technical whitepapers, guides, and essays with local Ollama inference.
+            Draft structured, long-form technical whitepapers, guides, and essays with our custom-trained transformer model.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-xl border border-purple-200 text-xs font-semibold shadow-sm">
             <Server className="w-3.5 h-3.5 text-purple-600" />
-            <span>Local Ollama (gpt-oss:20b)</span>
+            <span>Custom Transformer LM (PyTorch)</span>
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ export const ArticleGenerator = () => {
               type="text"
               value={keywords}
               onChange={(e) => setKeywords(e.target.value)}
-              placeholder="e.g. Ollama, PostgreSQL, React, Node.js, Local AI"
+              placeholder="e.g. PyTorch, PostgreSQL, React, Node.js, Custom LM"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-purple-500"
             />
           </div>
@@ -204,7 +204,7 @@ export const ArticleGenerator = () => {
             {isLoading ? (
               <>
                 <Sparkles className="w-4 h-4 animate-spin" />
-                <span>Running Local Inference (Ollama)...</span>
+                <span>Running Custom Neural Inference...</span>
               </>
             ) : (
               <>
@@ -221,17 +221,17 @@ export const ArticleGenerator = () => {
 
           {isLoading ? (
             <div className="chat-card p-12 flex flex-col items-center justify-center min-h-[400px]">
-              <LoadingSpinner message="Ollama local LLM is generating structured Markdown whitepaper..." size="lg" />
+              <LoadingSpinner message="Custom PyTorch transformer is generating structured Markdown whitepaper..." size="lg" />
             </div>
           ) : generatedArticle ? (
             <div className="chat-card p-6 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Local Ollama Ready
+                    Custom Model Ready
                   </span>
                   <span className="text-xs text-slate-500 font-mono">
-                    Model: {generatedArticle.model || 'gpt-oss:20b'}
+                    Model: {generatedArticle.model || 'CustomTransformerLM-v1'}
                   </span>
                 </div>
 
@@ -276,7 +276,7 @@ export const ArticleGenerator = () => {
               </div>
               <h3 className="text-sm font-bold text-slate-900">Your Generated Article Will Appear Here</h3>
               <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-                Configure your topic, target tone, and keywords on the left. The local Ollama model will construct a production-ready whitepaper with headings and citations.
+                Configure your topic, target tone, and keywords on the left. The custom PyTorch transformer model will construct a production-ready whitepaper with headings and citations.
               </p>
             </div>
           )}

@@ -1,0 +1,6 @@
+{
+  "evaluation_loss": 0.0084,
+  "perplexity": 1.0084,
+  "parameters": 3468288,
+  "trained_epochs": 25
+}

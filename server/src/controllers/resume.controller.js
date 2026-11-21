@@ -9,7 +9,7 @@ export const analyzeResume = async (req, res, next) => {
   let uploadedFilePath = null;
   try {
     const userId = req.user.id;
-    const { provider = 'ollama', targetRole } = req.body;
+    const { provider = 'custom_ai', targetRole } = req.body;
 
     let resumeText = '';
     let fileName = 'Resume';
@@ -35,7 +35,7 @@ export const analyzeResume = async (req, res, next) => {
       return errorResponse(res, 'Resume contains insufficient readable text for analysis.', 400);
     }
 
-    logger.info(`Analyzing resume "${fileName}" for user [${userId}] via local AI engine`);
+    logger.info(`Analyzing resume "${fileName}" for user [${userId}] via custom AI engine`);
 
     let analysisResult;
     try {
@@ -47,10 +47,10 @@ export const analyzeResume = async (req, res, next) => {
       });
     } catch (aiErr) {
       if (uploadedFilePath) await storageService.deleteFile(uploadedFilePath);
-      const statusCode = aiErr.statusCode || (aiErr.isOllamaUnavailable ? 503 : 500);
+      const statusCode = aiErr.statusCode || (aiErr.isCustomAiUnavailable ? 503 : 500);
       return res.status(statusCode).json({
         success: false,
-        message: aiErr.message || 'Local AI resume analysis failed.',
+        message: aiErr.message || 'Custom AI resume analysis failed. Ensure python ai-model/api/server.py is running.',
       });
     }
 
@@ -59,12 +59,12 @@ export const analyzeResume = async (req, res, next) => {
       toolType: 'resume',
       prompt: `Resume analysis: ${fileName} ${targetRole ? `(Target: ${targetRole})` : ''}`,
       result: JSON.stringify(analysisResult),
-      provider: analysisResult.provider || 'ollama',
+      provider: analysisResult.provider || 'custom_ai',
       metadata: {
         fileName,
         targetRole,
         candidateOverview: analysisResult.candidateOverview,
-        model: analysisResult.model || 'gpt-oss:20b',
+        model: analysisResult.model || 'ResumeDomainClassifierNet-v1',
         isLocal: true,
       },
     });

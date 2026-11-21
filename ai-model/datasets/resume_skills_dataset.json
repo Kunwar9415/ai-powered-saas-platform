@@ -1,0 +1,197 @@
+{
+  "categories": [
+    "Full-Stack Web Development",
+    "Machine Learning & Data Science",
+    "Cloud Engineering & DevOps",
+    "Cybersecurity & Infrastructure",
+    "Mobile App Development",
+    "Product & Engineering Management"
+  ],
+  "taxonomy": {
+    "languages": [
+      "JavaScript",
+      "TypeScript",
+      "Python",
+      "Java",
+      "C++",
+      "C#",
+      "Go",
+      "Rust",
+      "SQL",
+      "HTML",
+      "CSS",
+      "Bash",
+      "R"
+    ],
+    "frontend": [
+      "React",
+      "Vue",
+      "Angular",
+      "Next.js",
+      "Tailwind CSS",
+      "Bootstrap",
+      "Redux",
+      "Webpack",
+      "Vite",
+      "HTML5",
+      "CSS3"
+    ],
+    "backend": [
+      "Node.js",
+      "Express",
+      "FastAPI",
+      "Django",
+      "Flask",
+      "Spring Boot",
+      "ASP.NET",
+      "GraphQL",
+      "REST APIs",
+      "gRPC"
+    ],
+    "databases": [
+      "PostgreSQL",
+      "MongoDB",
+      "MySQL",
+      "Redis",
+      "SQLite",
+      "Cassandra",
+      "DynamoDB",
+      "Elasticsearch",
+      "Prisma"
+    ],
+    "cloud_devops": [
+      "AWS",
+      "Azure",
+      "Google Cloud",
+      "Docker",
+      "Kubernetes",
+      "Terraform",
+      "CI/CD",
+      "Linux",
+      "Nginx",
+      "GitHub Actions"
+    ],
+    "ai_ml": [
+      "PyTorch",
+      "TensorFlow",
+      "Scikit-Learn",
+      "Pandas",
+      "NumPy",
+      "NLP",
+      "Computer Vision",
+      "Transformers",
+      "Keras",
+      "OpenCV"
+    ],
+    "soft_skills": [
+      "Leadership",
+      "Agile",
+      "Scrum",
+      "Communication",
+      "Problem Solving",
+      "Collaboration",
+      "Critical Thinking",
+      "Mentorship"
+    ]
+  },
+  "role_benchmarks": {
+    "Full-Stack Developer": [
+      "React",
+      "Node.js",
+      "JavaScript",
+      "TypeScript",
+      "PostgreSQL",
+      "REST APIs",
+      "Tailwind CSS",
+      "Git",
+      "Docker"
+    ],
+    "Machine Learning Engineer": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "Scikit-Learn",
+      "NumPy",
+      "Pandas",
+      "Deep Learning",
+      "NLP",
+      "SQL"
+    ],
+    "DevOps / Cloud Engineer": [
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "CI/CD",
+      "Linux",
+      "Terraform",
+      "Bash",
+      "Python",
+      "Monitoring"
+    ],
+    "Backend Engineer": [
+      "Node.js",
+      "Python",
+      "PostgreSQL",
+      "Redis",
+      "REST APIs",
+      "Docker",
+      "SQL",
+      "Microservices",
+      "Git"
+    ],
+    "Frontend Engineer": [
+      "React",
+      "JavaScript",
+      "TypeScript",
+      "Tailwind CSS",
+      "HTML5",
+      "CSS3",
+      "Vite",
+      "Redux",
+      "Git"
+    ],
+    "Data Scientist": [
+      "Python",
+      "SQL",
+      "Pandas",
+      "NumPy",
+      "Scikit-Learn",
+      "Machine Learning",
+      "Statistics",
+      "Data Visualization",
+      "R"
+    ]
+  },
+  "samples": [
+    {
+      "domain": "Full-Stack Web Development",
+      "label": 0,
+      "text": "Full-Stack Software Engineer with 3+ years experience building web applications using React, Node.js, Express, TypeScript, and PostgreSQL. Experienced in REST API design, Prisma ORM, Tailwind CSS, Docker, and GitHub Actions CI/CD workflows."
+    },
+    {
+      "domain": "Machine Learning & Data Science",
+      "label": 1,
+      "text": "Data Scientist and Machine Learning Researcher specializing in PyTorch, Scikit-Learn, Pandas, and NLP. Implemented Transformer architectures, deep neural networks, predictive modeling, statistical hypothesis testing, and model evaluation pipelines."
+    },
+    {
+      "domain": "Cloud Engineering & DevOps",
+      "label": 2,
+      "text": "Senior Cloud and DevOps Engineer with deep expertise in AWS, Kubernetes, Docker, Terraform, and Linux administration. Designed highly available infrastructure, continuous integration deployment pipelines, and automated observability monitoring."
+    },
+    {
+      "domain": "Cybersecurity & Infrastructure",
+      "label": 3,
+      "text": "Cybersecurity Analyst and Systems Administrator skilled in network defense, vulnerability assessments, penetration testing, SIEM log analysis, firewall configuration, identity access management, and ISO 27001 regulatory compliance."
+    },
+    {
+      "domain": "Mobile App Development",
+      "label": 4,
+      "text": "Mobile Application Developer with 4 years expertise developing cross-platform and native mobile apps using React Native, Flutter, Swift, Kotlin, and SQLite. Published multi-tier applications to Google Play and Apple App Store."
+    },
+    {
+      "domain": "Product & Engineering Management",
+      "label": 5,
+      "text": "Engineering Manager and Technical Product Lead directing Agile scrum teams, sprint planning, cross-functional stakeholder roadmaps, customer discovery, system architecture reviews, and high-impact SaaS product delivery."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "accuracy": 100.0,
+  "loss": 0.0017,
+  "categories": [
+    "Technology & Software Engineering",
+    "Academic Research & Science",
+    "Business & Product Strategy",
+    "Finance & Economics",
+    "Legal, Compliance & Policy",
+    "Medical & Healthcare Sciences"
+  ],
+  "sample_count": 240,
+  "parameters": 95942
+}

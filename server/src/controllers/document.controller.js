@@ -59,7 +59,7 @@ export const uploadDocument = async (req, res, next) => {
 
 export const analyzeDocument = async (req, res, next) => {
   try {
-    const { documentId, rawText, fileName = 'Document', mode = 'summarize', provider = 'ollama' } = req.body;
+    const { documentId, rawText, fileName = 'Document', mode = 'summarize', provider = 'custom_ai' } = req.body;
     const userId = req.user.id;
 
     let textToAnalyze = rawText;
@@ -77,7 +77,7 @@ export const analyzeDocument = async (req, res, next) => {
       return errorResponse(res, 'No document text provided for analysis.', 400);
     }
 
-    logger.info(`Analyzing document "${docRecord?.fileName || fileName}" for user [${userId}] via local AI`);
+    logger.info(`Analyzing document "${docRecord?.fileName || fileName}" for user [${userId}] via custom AI`);
 
     let analysisResult;
     try {
@@ -88,10 +88,10 @@ export const analyzeDocument = async (req, res, next) => {
         provider,
       });
     } catch (aiErr) {
-      const statusCode = aiErr.statusCode || (aiErr.isOllamaUnavailable ? 503 : 500);
+      const statusCode = aiErr.statusCode || (aiErr.isCustomAiUnavailable ? 503 : 500);
       return res.status(statusCode).json({
         success: false,
-        message: aiErr.message || 'Local AI document analysis failed.',
+        message: aiErr.message || 'Custom AI document analysis failed. Ensure python ai-model/api/server.py is running.',
       });
     }
 
@@ -104,12 +104,12 @@ export const analyzeDocument = async (req, res, next) => {
       toolType: 'document',
       prompt: `Analyze document: ${docRecord?.fileName || fileName} (Mode: ${mode})`,
       result: JSON.stringify(analysisResult),
-      provider: analysisResult.provider || 'ollama',
+      provider: analysisResult.provider || 'custom_ai',
       metadata: {
         fileName: docRecord?.fileName || fileName,
         mode,
         documentId: docRecord?.id,
-        model: analysisResult.model || 'gpt-oss:20b',
+        model: analysisResult.model || 'DocumentClassifierNet-v1',
         isLocal: true,
       },
     });
@@ -121,7 +121,7 @@ export const analyzeDocument = async (req, res, next) => {
         generationId: generationRecord?.id || 'gen_' + Date.now(),
         documentId: docRecord?.id,
       },
-      'Document analyzed successfully via local AI model!'
+      'Document analyzed successfully via custom AI model!'
     );
   } catch (error) {
     logger.error('Document analysis error:', error.message);

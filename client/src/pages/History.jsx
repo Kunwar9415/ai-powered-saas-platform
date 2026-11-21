@@ -79,7 +79,6 @@ export const History = () => {
   const filters = [
     { id: 'all', label: 'All Activities' },
     { id: 'text', label: 'Chat & Text' },
-    { id: 'image', label: 'Image Studio' },
     { id: 'document', label: 'Documents' },
     { id: 'resume', label: 'Resume ATS' },
     { id: 'article', label: 'Articles' },
@@ -232,22 +231,12 @@ export const History = () => {
               </p>
             </div>
 
-            {selectedItem.generation?.toolType === 'image' ? (
-              <div className="rounded-xl overflow-hidden bg-slate-900 p-2 border border-slate-800">
-                <img
-                  src={selectedItem.generation?.result}
-                  alt={selectedItem.generation?.prompt}
-                  className="w-full max-h-[450px] object-contain rounded-lg"
-                />
-              </div>
-            ) : (
-              <AIResultCard
-                result={selectedItem.generation?.result}
-                provider={selectedItem.generation?.provider}
-                toolType={selectedItem.generation?.toolType}
-                title="Historical Generation Output"
-              />
-            )}
+            <AIResultCard
+              result={selectedItem.generation?.result}
+              provider={selectedItem.generation?.provider}
+              toolType={selectedItem.generation?.toolType}
+              title="Historical Generation Output"
+            />
           </div>
         </div>
       )}

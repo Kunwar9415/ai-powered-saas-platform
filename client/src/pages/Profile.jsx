@@ -162,7 +162,7 @@ export const Profile = () => {
           </div>
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
             <span className="text-slate-500 block text-[11px]">Active AI Engine:</span>
-            <span className="font-bold text-emerald-700">Groq Cloud (GPT-OSS 120B / Fast LPU)</span>
+            <span className="font-bold text-emerald-700">Custom PyTorch Models (FastAPI :8000)</span>
           </div>
         </div>
       </div>

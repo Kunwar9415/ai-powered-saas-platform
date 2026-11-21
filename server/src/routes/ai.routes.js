@@ -2,7 +2,6 @@ import express from 'express';
 import {
   generate,
   generateText,
-  generateImage,
   generateArticle,
   generateTitles,
   getProviders,
@@ -24,6 +23,5 @@ router.post('/generate', authenticate, aiEndpointLimiter, generate);
 router.post('/generate-text', authenticate, aiEndpointLimiter, generateText);
 router.post('/generate-article', authenticate, aiEndpointLimiter, generateArticle);
 router.post('/generate-titles', authenticate, aiEndpointLimiter, generateTitles);
-router.post('/generate-image', authenticate, aiEndpointLimiter, generateImage);
 
 export default router;
