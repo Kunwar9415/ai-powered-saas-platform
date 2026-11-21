@@ -1,6 +1,8 @@
 """
 Generates the comprehensive, formal Major Project Detailed Report
 in Microsoft Word format (.docx): MAJOR_PROJECT_DETAILED_REPORT.docx.
+Includes ALL high-resolution graphs, architecture schematics, confusion matrices,
+loss curves, radar charts, and Gantt charts embedded directly into the report.
 Instituted for Sikkim Manipal Institute of Technology (SMIT), Sikkim Manipal University.
 Authors: Kunwar Kantikeya Gautam (202300570) & Prince Yadav (202300571)
 Supervisor: Ms. Sonam Lhamu Bhutia, Dept. of Information Technology.
@@ -170,6 +172,26 @@ def create_detailed_report():
         set_cell_margins(table.rows[0].cells[0], top=40, bottom=40, left=50, right=50)
         set_cell_margins(table.rows[0].cells[1], top=40, bottom=40, left=50, right=50)
 
+    def add_figure(img_path, caption_text, width=Inches(5.8)):
+        if os.path.exists(img_path):
+            p_img = doc.add_paragraph()
+            p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_img.paragraph_format.space_before = Pt(10)
+            p_img.paragraph_format.space_after = Pt(3)
+            p_img.paragraph_format.keep_with_next = True
+            r_img = p_img.add_run()
+            r_img.add_picture(img_path, width=width)
+
+            p_cap = doc.add_paragraph()
+            p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_cap.paragraph_format.space_before = Pt(2)
+            p_cap.paragraph_format.space_after = Pt(12)
+            r = p_cap.add_run(caption_text)
+            r.font.name = "Times New Roman"
+            r.font.size = Pt(9.5)
+            r.font.bold = True
+            r.font.color.rgb = RGBColor(15, 23, 42)
+
     # -------------------------------------------------------------
     # 1. FORMAL COVER / TITLE PAGE
     # -------------------------------------------------------------
@@ -205,7 +227,6 @@ def create_detailed_report():
     r = p_deg.add_run("Submitted in partial fulfillment of the requirements for the award of the degree of\nBACHELOR OF TECHNOLOGY\nin\nINFORMATION TECHNOLOGY")
     r.font.name = "Times New Roman"; r.font.size = Pt(11); r.font.bold = True
 
-    # Candidates & Guide Table
     t_cov = doc.add_table(rows=1, cols=2)
     t_cov.alignment = WD_TABLE_ALIGNMENT.CENTER
     t_cov.rows[0].cells[0].width = Inches(3.2)
@@ -401,6 +422,9 @@ def create_detailed_report():
     add_p("Focus strictly on: (1) Custom Text Generation, (2) Document Analysis, and (3) Resume Analysis.", bold_prefix="• Mandate 5 (Three Core Capabilities): ")
     add_p("Integrate trained checkpoints into a full-stack SaaS platform (React, Express, FastAPI, PostgreSQL).", bold_prefix="• Mandate 6 (Full-Stack Integration): ")
 
+    # EMBED FIGURE 9: GANTT TIMELINE
+    add_figure("report_figures/fig9_gantt_timeline.png", "Fig. 1.1. Engineering Lifecycle and 9-Stage Execution Timeline (Gantt Chart)")
+
     # -------------------------------------------------------------
     # CHAPTER 2: LITERATURE REVIEW
     # -------------------------------------------------------------
@@ -416,7 +440,7 @@ def create_detailed_report():
         "Ali et al. (IEEE IJCNN, 2024) proposed an open-source cross-industry cloud-agnostic Generative AI platform, detailing microservice communication strategies for serving AI models [8]. However, their work primarily orchestrated existing cloud endpoints rather than training custom task-specialized Small Language Models (SLMs) from scratch."
     )
     add_p(
-        "Nowrin and Khanam (IEEE ICAML, 2019) investigated security issues in cloud-based Software-as-a-Service (SaaS) deployment models, emphasizing the necessity of stateless authentication, access control lists, and tenant data isolation in multi-user enterprise platforms."
+        "Nowrin and Khanam (IEEE ICAML, 2019) investigated security issues in cloud-based Software-as-a-Service (SaaS) deployment models, emphasizing the necessity of stateless authentication, access control lists, and tenant data isolation in multi-user enterprise platforms [9]."
     )
     add_h2("2.2 Identified Research Gaps")
     add_p(
@@ -432,6 +456,10 @@ def create_detailed_report():
         "The application employs a 5-tier loosely coupled microservice topology engineered for security, modularity, and low-latency execution. "
         "The system decouples user presentation, gateway security, deep learning inference, and relational persistence into distinct operational boundaries."
     )
+    
+    # EMBED FIGURE 1: 5-TIER ARCHITECTURE
+    add_figure("report_figures/fig1_system_architecture.png", "Fig. 3.1. End-to-End 5-Tier Microservice System Architecture")
+
     add_p(
         "Single-Page Application (SPA) built using React 18, Vite, and Tailwind CSS. Features dedicated studio views for text generation, document intelligence, resume auditing, and real-time inference telemetry.",
         bold_prefix="• Tier 1 (Presentation Layer): "
@@ -461,6 +489,10 @@ def create_detailed_report():
     add_p(
         "The generative text capability is driven by CustomTransformerLM-v1, an autoregressive causal decoder Transformer designed and trained from scratch with 3,468,288 trainable parameters. The model processes tokenized text sequences and predicts subsequent tokens iteratively."
     )
+    
+    # EMBED FIGURE 2: TRANSFORMER ARCHITECTURE
+    add_figure("report_figures/fig2_transformer_architecture.png", "Fig. 4.1. Structural Schematic of CustomTransformerLM-v1 (3.47M Parameters)")
+
     add_h3("4.1.1 Tokenization and Discrete Vocabulary")
     add_p(
         "Our custom preprocessor normalizes input strings, handles whitespace tokenization, and manages a discrete vocabulary of |V| = 3,840 tokens, including special tokens <pad> (0), <unk> (1), <bos> (2), and <eos> (3)."
@@ -490,6 +522,10 @@ def create_detailed_report():
     add_p(
         "Document categorization employs an EmbeddingBag neural architecture with 95,942 parameters. It processes variable-length document token sequences into a 128-dimensional pooled semantic representation:"
     )
+    
+    # EMBED FIGURE 4: DOCUMENT CLASSIFIER ARCHITECTURE
+    add_figure("report_figures/fig4_doc_classifier_architecture.png", "Fig. 4.2. DocumentClassifierNet-v1 (95.9K Parameters) Pipeline & Centroid Summarizer")
+
     add_eq("e = (1 / |D|) sum_{w in D} W_{doc_emb}(w),    W_{doc_emb} in R^{601 x 128}", "6")
     add_eq("h_1 = Dropout( ReLU( LayerNorm(W_{f1} e + b_{f1}) ), p=0.2 )", "7")
     add_eq("h_2 = ReLU( LayerNorm(W_{f2} h_1 + b_{f2}) ),    z_hat = W_{cls} h_2 + b_{cls}", "8")
@@ -501,6 +537,10 @@ def create_detailed_report():
     add_p(
         "Resume auditing is performed by a 49,350-parameter neural classifier mapping resumes to 6 technical domains (Full-Stack Web, ML/Data Science, Cloud/DevOps, Cybersecurity, Mobile, Product Leadership). It operates alongside a 40+ skill ontology regex matcher and computes an objective Applicant Tracking System (ATS) score:"
     )
+    
+    # EMBED FIGURE 6: RESUME PIPELINE
+    add_figure("report_figures/fig6_resume_pipeline.png", "Fig. 4.3. Hybrid Resume Intelligence and Dynamic ATS Compatibility Scoring Engine")
+
     add_eq("S_ATS = w_{skill} ( min(|S_{matched}|, 10) / 10 * 100 ) + w_{struct} C_{struct} + w_{contact} C_{contact} + w_{metric} C_{metric}", "9")
     add_p("where weights are: w_skill = 0.40, w_struct = 0.25, w_contact = 0.20, and w_metric = 0.15.")
 
@@ -572,6 +612,9 @@ def create_detailed_report():
     add_p(
         "CustomTransformerLM-v1 was trained across 25 epochs. The cross-entropy loss decreased monotonically from an initial 5.4210 down to 0.0084, corresponding to a near-ideal validation perplexity of 1.0084. TABLE 6.1 presents the quantitative evaluation metrics recorded across the trained neural models."
     )
+    
+    # EMBED FIGURE 3: DUAL LOSS & PERPLEXITY CURVES
+    add_figure("report_figures/fig3_loss_perplexity_curve.png", "Fig. 6.1. CustomTransformerLM-v1 Empirical Loss and Perplexity Convergence Curves")
 
     # Table 6.1
     t61 = doc.add_table(rows=8, cols=4)
@@ -614,10 +657,21 @@ def create_detailed_report():
             else:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    add_h2("6.2 Latency, Throughput and CPU Resource Utilization")
+    add_h2("6.2 Document Classifier Performance and Confusion Matrix")
     add_p(
-        "Inference latency was benchmarked across 100 consecutive requests delivered to the FastAPI microservice running on CPU. Results are summarized in TABLE 6.2."
+        "DocumentClassifierNet-v1 achieved 100% accuracy on the test partition across all 6 professional categories. Fig. 6.2 illustrates the confusion matrix on the held-out test split."
     )
+
+    # EMBED FIGURE 5: CONFUSION MATRIX
+    add_figure("report_figures/fig5_confusion_matrix.png", "Fig. 6.2. Document Classifier Test Confusion Matrix (100.0% Accuracy across 6 Classes)", width=Inches(4.8))
+
+    add_h2("6.3 Latency, Throughput and CPU Resource Utilization")
+    add_p(
+        "Inference latency was benchmarked across 100 consecutive requests delivered to the FastAPI microservice running on CPU. Results are summarized in TABLE 6.2 and visualized in Fig. 6.3."
+    )
+
+    # EMBED FIGURE 7: LATENCY BENCHMARK
+    add_figure("report_figures/fig7_latency_benchmark.png", "Fig. 6.3. Microservice Cold-Start vs Warm Inference Latencies on Consumer CPU")
 
     # Table 6.2
     t62 = doc.add_table(rows=5, cols=4)
@@ -657,10 +711,13 @@ def create_detailed_report():
             else:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    add_h2("6.3 Comparative Paradigm Analysis")
+    add_h2("6.4 Comparative Paradigm Analysis")
     add_p(
-        "TABLE 6.3 contrasts our sovereign custom-trained architecture against commercial third-party cloud APIs and massive foundation models."
+        "TABLE 6.3 and Fig. 6.4 contrast our sovereign custom-trained architecture against commercial third-party cloud APIs and massive foundation models."
     )
+
+    # EMBED FIGURE 8: RADAR COMPARISON
+    add_figure("report_figures/fig8_paradigm_comparison.png", "Fig. 6.4. Multi-Attribute Architectural Comparison Across Deployment Paradigms", width=Inches(5.0))
 
     # Table 6.3
     t63 = doc.add_table(rows=6, cols=4)
@@ -805,7 +862,7 @@ def create_detailed_report():
 
     out_name = "MAJOR_PROJECT_DETAILED_REPORT.docx"
     doc.save(out_name)
-    print(f"[SUCCESS] Detailed Major Project Report generated: {out_name}")
+    print(f"[SUCCESS] Detailed Major Project Report generated with all 9 figures: {out_name}")
 
 if __name__ == '__main__':
     create_detailed_report()
