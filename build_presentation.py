@@ -12,6 +12,7 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
+from PIL import Image
 
 def build_presentation():
     prs = Presentation()
@@ -68,6 +69,41 @@ def build_presentation():
         shape.line.color.rgb = border_color
         shape.line.width = Pt(1)
         return shape
+
+    def add_figure_card(slide, left, top, width, height, image_path, caption=None):
+        card = add_card(slide, left, top, width, height, bg_color=COLOR_WHITE, border_color=COLOR_BORDER)
+        if os.path.exists(image_path):
+            cap_h = Inches(1.1) if caption else Inches(0)
+            max_w = width - Inches(0.4)
+            max_h = height - cap_h - Inches(0.35)
+            
+            with Image.open(image_path) as im:
+                iw, ih = im.size
+            aspect = iw / ih
+            
+            fit_w = max_w
+            fit_h = int(fit_w / aspect)
+            if fit_h > max_h:
+                fit_h = max_h
+                fit_w = int(fit_h * aspect)
+                
+            img_x = left + (width - fit_w) // 2
+            img_y = top + Inches(0.18) + (max_h - fit_h) // 2
+            
+            slide.shapes.add_picture(image_path, img_x, img_y, width=fit_w, height=fit_h)
+            
+            if caption:
+                cap_y = top + height - cap_h - Inches(0.08)
+                cap_box = slide.shapes.add_textbox(left + Inches(0.25), cap_y, width - Inches(0.5), cap_h)
+                tf = cap_box.text_frame
+                tf.word_wrap = True
+                p = tf.paragraphs[0]
+                p.text = caption
+                p.font.name = 'Times New Roman'
+                p.font.size = Pt(11)
+                p.font.color.rgb = COLOR_BODY
+                p.font.italic = True
+        return card
 
     # =========================================================================
     # SLIDE 1: Title Slide (Final Defense)
@@ -440,89 +476,104 @@ def build_presentation():
     add_header(s8, "5-Tier End-to-End System Architecture", 8)
 
     tiers_data = [
-        ("Tier 1: Presentation Layer", "React 18, Vite, Tailwind CSS", "Single Page Application (SPA), responsive dashboard, real-time inference visualizer, JWT state.", COLOR_BLUE),
-        ("Tier 2: Application Gateway", "Node.js & Express.js (:5000)", "Stateless JWT auth, rate limiting, Multer file upload buffering (PDF/DOCX), REST routing.", COLOR_PURPLE),
-        ("Tier 3: Local AI Microservice", "Python FastAPI (:8000) & Uvicorn", "Asynchronous endpoints (/generate, /analyze-document, /analyze-resume, /health), Pydantic schemas.", COLOR_DARK_PURPLE),
-        ("Tier 4: Deep Learning Layer", "PyTorch 2.6 Custom Models", "CustomTransformerLM-v1 (3.47M), DocumentClassifierNet-v1 (95.9K), ResumeClassifierNet (49.4K).", COLOR_BLACK),
-        ("Tier 5: Data Persistence Layer", "PostgreSQL via Prisma ORM", "Relational persistence for users, generation logs, documents, and historical audit metadata.", COLOR_EMERALD)
+        ("Tier 1: Presentation Layer", "React 18, Vite, Tailwind CSS", "Single Page Application (SPA), interactive inference visualizer, JWT state.", COLOR_BLUE),
+        ("Tier 2: Application Gateway", "Node.js & Express.js (:5000)", "Stateless JWT auth, rate limiting, Multer file upload buffering (PDF/DOCX).", COLOR_PURPLE),
+        ("Tier 3: Local AI Microservice", "Python FastAPI (:8000) & Uvicorn", "Asynchronous endpoints (/generate, /analyze-document, /analyze-resume, /health).", COLOR_DARK_PURPLE),
+        ("Tier 4: Deep Learning Layer", "PyTorch 2.6 Custom Models", "CustomTransformerLM (3.47M), DocumentNet (95.9K), ResumeClassifier (49.4K).", COLOR_BLACK),
+        ("Tier 5: Data Persistence Layer", "PostgreSQL via Prisma ORM", "Relational persistence for users, generation logs, and audit metadata.", COLOR_EMERALD)
     ]
-    t_tops = [Inches(1.35), Inches(2.45), Inches(3.55), Inches(4.65), Inches(5.75)]
+    t_tops = [Inches(1.35), Inches(2.48), Inches(3.61), Inches(4.74), Inches(5.87)]
     for idx, (tname, ttech, tdesc, tcolor) in enumerate(tiers_data):
         y = t_tops[idx]
-        add_card(s8, Inches(0.8), y, Inches(11.733), Inches(0.98), bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
+        add_card(s8, Inches(0.8), y, Inches(5.3), Inches(1.02), bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
         
-        tb = s8.shapes.add_textbox(Inches(1.0), y + Inches(0.08), Inches(11.333), Inches(0.8))
+        tb = s8.shapes.add_textbox(Inches(0.95), y + Inches(0.06), Inches(5.0), Inches(0.9))
         tf = tb.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = f"{tname}  —  "
+        p.text = f"{tname} "
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(15.5)
+        p.font.size = Pt(13)
         p.font.bold = True
         p.font.color.rgb = tcolor
 
         r = p.add_run()
         r.text = f"[{ttech}]"
-        r.font.size = Pt(13.5)
+        r.font.size = Pt(11)
         r.font.bold = True
         r.font.color.rgb = COLOR_MUTED
 
         p2 = tf.add_paragraph()
         p2.text = tdesc
         p2.font.name = 'Times New Roman'
-        p2.font.size = Pt(12.5)
+        p2.font.size = Pt(11)
         p2.font.color.rgb = COLOR_BODY
         p2.space_before = Pt(2)
 
-    # =========================================================================
+    # Right: Architecture Diagram Figure Card
+    add_figure_card(
+        s8, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.54),
+        'report_figures/fig1_system_architecture.png',
+        caption="Figure 1: 5-Tier Sovereign End-to-End Architecture. Requests originate at the React client, route through Express.js gateway security, execute on local FastAPI PyTorch microservices, and log to PostgreSQL with zero external API calls."
+    )
+# =========================================================================
     # SLIDE 9: Complete Engineering Lifecycle (9 Stages)
     # =========================================================================
     s9 = prs.slides.add_slide(blank_layout)
     add_header(s9, "Complete Engineering Lifecycle & Execution Stages", 9)
 
-    stages_9 = [
-        ("Stage 1: Feasibility Audit", "Inspected 16-thread CPU and 15.3GB RAM; selected compact custom neural architectures."),
-        ("Stage 2: Removal of Image AI", "Deleted legacy image pages, routes, controllers, and external API integrations."),
-        ("Stage 3: Dataset Curation", "Assembled text generation, document (240 samples), and resume skill datasets with permissive licenses."),
-        ("Stage 4: Text Model Training", "Trained 3.47M-parameter Transformer LM from scratch; reached 0.0084 loss and 1.0084 perplexity."),
-        ("Stage 5: Document AI Training", "Trained 95.9K-parameter DocumentClassifierNet across 6 domains; attained 100% test accuracy."),
-        ("Stage 6: Resume AI Training", "Trained 49.4K-parameter ResumeDomainClassifierNet and built 40+ skill ATS matching engine."),
-        ("Stage 7: FastAPI Serving", "Built Python FastAPI server with /health, /generate, /analyze-document, and /analyze-resume."),
-        ("Stage 8: Full-Stack Integration", "Connected Node.js Express gateway and React client; verified all 4 test suites."),
-        ("Stage 9: Comprehensive Testing", "Executed end-to-end integration tests, generated IEEE project report and final presentation.")
+    phases_data = [
+        ("Phase I: Audit & Scoping", "Stages 1–3", [
+            "Hardware audit (16-thread CPU, 15.3GB RAM).",
+            "Total removal of legacy image AI components.",
+            "Curation of 3 permissively-licensed datasets."
+        ], COLOR_BLUE),
+        ("Phase II: Model Training", "Stages 4–6", [
+            "CustomTransformerLM-v1 (3.47M, 0.0084 loss).",
+            "DocumentClassifierNet-v1 (95.9K, 100% test acc).",
+            "ResumeDomainClassifierNet-v1 (49.4K, 100% acc)."
+        ], COLOR_PURPLE),
+        ("Phase III: Full-Stack Integration", "Stages 7–9", [
+            "Python FastAPI async microservice (:8000).",
+            "Node.js Express gateway & React client.",
+            "Full verification suite & academic reports."
+        ], COLOR_EMERALD)
     ]
-    coords_9 = [
-        (Inches(0.8), Inches(1.3), Inches(3.733), Inches(1.7)),
-        (Inches(4.8), Inches(1.3), Inches(3.733), Inches(1.7)),
-        (Inches(8.8), Inches(1.3), Inches(3.733), Inches(1.7)),
-        (Inches(0.8), Inches(3.1), Inches(3.733), Inches(1.7)),
-        (Inches(4.8), Inches(3.1), Inches(3.733), Inches(1.7)),
-        (Inches(8.8), Inches(3.1), Inches(3.733), Inches(1.7)),
-        (Inches(0.8), Inches(4.9), Inches(3.733), Inches(1.7)),
-        (Inches(4.8), Inches(4.9), Inches(3.733), Inches(1.7)),
-        (Inches(8.8), Inches(4.9), Inches(3.733), Inches(1.7)),
-    ]
-    for idx, (stitle, sdesc) in enumerate(stages_9):
-        cx, cy, cw, ch = coords_9[idx]
-        add_card(s9, cx, cy, cw, ch, bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
-        tb = s9.shapes.add_textbox(cx + Inches(0.15), cy + Inches(0.1), cw - Inches(0.3), ch - Inches(0.2))
+    p_lefts = [Inches(0.8), Inches(4.75), Inches(8.7)]
+    for idx, (pname, pstage, pbullets, pcolor) in enumerate(phases_data):
+        x = p_lefts[idx]
+        add_card(s9, x, Inches(1.35), Inches(3.8), Inches(1.9), bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
+        tb = s9.shapes.add_textbox(x + Inches(0.15), Inches(1.42), Inches(3.5), Inches(1.75))
         tf = tb.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
-        p.text = stitle
+        p.text = f"{pname} "
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(14)
+        p.font.size = Pt(13)
         p.font.bold = True
-        p.font.color.rgb = COLOR_PURPLE
+        p.font.color.rgb = pcolor
 
-        p2 = tf.add_paragraph()
-        p2.text = sdesc
-        p2.font.name = 'Times New Roman'
-        p2.font.size = Pt(11.5)
-        p2.font.color.rgb = COLOR_BODY
-        p2.space_before = Pt(3)
+        r = p.add_run()
+        r.text = f"[{pstage}]"
+        r.font.size = Pt(11)
+        r.font.bold = True
+        r.font.color.rgb = COLOR_MUTED
 
-    # =========================================================================
+        for b in pbullets:
+            pb = tf.add_paragraph()
+            pb.text = f"• {b}"
+            pb.font.name = 'Times New Roman'
+            pb.font.size = Pt(11)
+            pb.font.color.rgb = COLOR_BODY
+            pb.space_before = Pt(2)
+
+    # Bottom: Gantt Chart Timeline
+    add_figure_card(
+        s9, Inches(0.8), Inches(3.4), Inches(11.733), Inches(3.5),
+        'report_figures/fig9_gantt_timeline.png',
+        caption="Figure 9: Major Project Engineering Lifecycle Gantt Chart illustrating sequential milestones, parallel pipeline development, and validation checkpoints across all 9 execution stages."
+    )
+# =========================================================================
     # SLIDE 10: Training Datasets & Open-Source Licensing
     # =========================================================================
     s10 = prs.slides.add_slide(blank_layout)
@@ -579,15 +630,15 @@ def build_presentation():
     s11 = prs.slides.add_slide(blank_layout)
     add_header(s11, "Model 1: CustomTransformerLM-v1 (3.47M Params)", 11)
 
-    c_m1_l = add_card(s11, Inches(0.8), Inches(1.3), Inches(5.8), Inches(5.4))
-    tb_m1_l = s11.shapes.add_textbox(Inches(1.0), Inches(1.45), Inches(5.4), Inches(5.1))
+    c_m1_l = add_card(s11, Inches(0.8), Inches(1.35), Inches(5.5), Inches(5.55))
+    tb_m1_l = s11.shapes.add_textbox(Inches(1.0), Inches(1.45), Inches(5.1), Inches(5.3))
     tf_m1_l = tb_m1_l.text_frame
     tf_m1_l.word_wrap = True
 
     p = tf_m1_l.paragraphs[0]
-    p.text = "Architectural Specifications"
+    p.text = "Architectural Specifications & Math"
     p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
+    p.font.size = Pt(16.5)
     p.font.bold = True
     p.font.color.rgb = COLOR_PURPLE
 
@@ -596,68 +647,42 @@ def build_presentation():
         "Total Trainable Parameters: 3,468,288 (~3.47 Million)",
         "Embedding Dimension (d_model): 256",
         "Transformer Blocks (L): 4 identical Pre-LayerNorm blocks",
-        "Multi-Head Attention (h): 4 heads, head dimension d_k = 64",
+        "Multi-Head Attention: 4 heads, head dimension d_k = 64",
         "Feed-Forward Expansion (d_ff): 1024 with GELU non-linearity",
-        "Max Context Length (T_max): 256 tokens",
-        "Vocabulary Size (|V|): 3,840 distinct tokens",
-        "Dropout Regularization: p = 0.10 applied to attention & residuals",
-        "Weight Initialization: Explicit Gaussian N(0.0, 0.02), zero biases"
+        "Max Context Length (T_max): 256 tokens | Vocab: 3,840 tokens",
+        "Pre-LN Stability: x + Sublayer(LayerNorm(x))",
+        "Causal Mask: M_{i,j} = -infinity for j > i (prevents future leakage)",
+        "Initialization: Gaussian N(0.0, 0.02), zero biases, no pretrained weights"
     ]
     for s in m1_specs:
         p = tf_m1_l.add_paragraph()
         p.text = f"•  {s}"
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
+        p.font.size = Pt(11.5)
         p.font.color.rgb = COLOR_BODY
-        p.space_before = Pt(5)
+        p.space_before = Pt(4)
 
-    c_m1_r = add_card(s11, Inches(6.8), Inches(1.3), Inches(5.7), Inches(5.4), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_m1_r = s11.shapes.add_textbox(Inches(7.0), Inches(1.45), Inches(5.3), Inches(5.1))
-    tf_m1_r = tb_m1_r.text_frame
-    tf_m1_r.word_wrap = True
-
-    p = tf_m1_r.paragraphs[0]
-    p.text = "Mathematical Formulations"
-    p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
-    p.font.bold = True
-    p.font.color.rgb = COLOR_DARK_PURPLE
-
-    m1_math = [
-        ("Token + Position Embedding:", "H_0 = Dropout( W_e(X) + W_p([1, ..., T]) )"),
-        ("Causal Multi-Head Self-Attention:", "Attention(Q, K, V) = Softmax( (Q K^T) / sqrt(d_k) + M ) V\nwhere M_{i,j} = -inf if i < j (prevents backward leakage)."),
-        ("Pre-LN Transformer Block:", "H'_l = H_{l-1} + CSMA( LayerNorm(H_{l-1}) )\nH_l = H'_l + FFN( LayerNorm(H'_l) )"),
-        ("Position-wise GELU FFN:", "FFN(z) = ( GELU(z W_1 + b_1) ) W_2 + b_2"),
-        ("Cross-Entropy Loss Objective:", "L_LM = - (1 / T) sum_{t=1}^T log P(x_t | x_{<t}; theta)")
-    ]
-    for h, b in m1_math:
-        p = tf_m1_r.add_paragraph()
-        p.text = f"•  {h} "
-        p.font.name = 'Times New Roman'
-        p.font.size = Pt(12.5)
-        p.font.bold = True
-        p.font.color.rgb = COLOR_BLACK
-        p.space_before = Pt(6)
-        run = p.add_run()
-        run.text = b
-        run.font.bold = False
-        run.font.color.rgb = COLOR_BODY
-
-    # =========================================================================
+    # Right: Transformer Architecture Schematic
+    add_figure_card(
+        s11, Inches(6.5), Inches(1.35), Inches(6.033), Inches(5.55),
+        'report_figures/fig2_transformer_architecture.png',
+        caption="Figure 2: CustomTransformerLM-v1 architectural schematic. Features learned positional encoding, Pre-LN multi-head causal attention with triangular masking, GELU expansion, and residual connections."
+    )
+# =========================================================================
     # SLIDE 12: Model 1 Results: Training Loss & Perplexity Convergence
     # =========================================================================
     s12 = prs.slides.add_slide(blank_layout)
     add_header(s12, "Model 1 Results: Loss & Perplexity Convergence", 12)
 
-    # Left: Loss Progression Table
+    # Left Top: Loss Progression Table
     rows, cols = 7, 3
-    left, top, width, height = Inches(0.8), Inches(1.4), Inches(5.8), Inches(5.2)
+    left, top, width, height = Inches(0.8), Inches(1.35), Inches(5.3), Inches(2.7)
     t_shape = s12.shapes.add_table(rows, cols, left, top, width, height)
     tbl = t_shape.table
 
-    tbl.columns[0].width = Inches(1.8)
-    tbl.columns[1].width = Inches(2.0)
-    tbl.columns[2].width = Inches(2.0)
+    tbl.columns[0].width = Inches(1.7)
+    tbl.columns[1].width = Inches(1.8)
+    tbl.columns[2].width = Inches(1.8)
 
     pheaders = ["Training Epoch", "Cross-Entropy Loss", "Perplexity (PPL)"]
     for c_i, ht in enumerate(pheaders):
@@ -667,7 +692,7 @@ def build_presentation():
         cell.fill.fore_color.rgb = RGBColor(30, 41, 59)
         p = cell.text_frame.paragraphs[0]
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
+        p.font.size = Pt(11)
         p.font.bold = True
         p.font.color.rgb = COLOR_WHITE
         p.alignment = PP_ALIGN.CENTER
@@ -689,46 +714,51 @@ def build_presentation():
             cell.fill.fore_color.rgb = bg
             p = cell.text_frame.paragraphs[0]
             p.font.name = 'Times New Roman'
-            p.font.size = Pt(12.5)
+            p.font.size = Pt(11)
             p.font.color.rgb = COLOR_BLACK
             p.alignment = PP_ALIGN.CENTER
             if r_i == 5:
                 p.font.bold = True
                 p.font.color.rgb = COLOR_PURPLE
 
-    # Right: Convergence Insights
-    c_ci = add_card(s12, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.2), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_ci = s12.shapes.add_textbox(Inches(7.0), Inches(1.55), Inches(5.3), Inches(4.9))
+    # Left Bottom: Convergence Observations Card
+    add_card(s12, Inches(0.8), Inches(4.2), Inches(5.3), Inches(2.7), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
+    tb_ci = s12.shapes.add_textbox(Inches(0.95), Inches(4.28), Inches(5.0), Inches(2.5))
     tf_ci = tb_ci.text_frame
     tf_ci.word_wrap = True
 
     p = tf_ci.paragraphs[0]
-    p.text = "Key Convergence Observations"
+    p.text = "Key Convergence Takeaways"
     p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
+    p.font.size = Pt(14)
     p.font.bold = True
     p.font.color.rgb = COLOR_DARK_PURPLE
 
     c_pts = [
-        ("Monotonic Gradient Descent:", "Cross-entropy loss dropped monotonically from 5.4210 to 0.0084 without gradient explosions or vanishing gradients, validating the AdamW optimizer (lr=3e-4, weight_decay=0.01)."),
-        ("Near-Ideal Perplexity:", "Achieved a validation perplexity of 1.0084. Perplexity represents the effective branching factor; 1.0084 indicates near-certain predictive confidence over the domain token sequences."),
-        ("Clean Overfitting Mitigation:", "Dropout (0.10) across residual and attention projections combined with Pre-LayerNorm enabled smooth stabilization throughout the 25 epochs."),
-        ("Zero Pretrained Weights:", "Trained entirely from random weights. Checkpoint text_generator_best.pt saved at 42.7 MB.")
+        ("Monotonic Gradient Descent:", "Loss dropped steadily from 5.4210 to 0.0084 under AdamW (lr=3e-4, weight_decay=0.01)."),
+        ("Near-Ideal Perplexity:", "Achieved 1.0084 validation perplexity, indicating high-confidence token branch prediction."),
+        ("Zero Pretrained Weights:", "Trained 100% from random weights. Checkpoint text_generator_best.pt saved at 42.7 MB.")
     ]
     for h, b in c_pts:
         p = tf_ci.add_paragraph()
-        p.text = f"•  {h} "
+        p.text = f"• {h} "
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
+        p.font.size = Pt(11)
         p.font.bold = True
         p.font.color.rgb = COLOR_BLACK
-        p.space_before = Pt(8)
+        p.space_before = Pt(3)
         run = p.add_run()
         run.text = b
         run.font.bold = False
         run.font.color.rgb = COLOR_BODY
 
-    # =========================================================================
+    # Right: Loss & Perplexity Curve Figure Card
+    add_figure_card(
+        s12, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig3_loss_perplexity_curve.png',
+        caption="Figure 3: Empirical training loss and validation perplexity convergence curves across 25 epochs. Demonstrates stable monotonic optimization without gradient vanishing or overfitting."
+    )
+# =========================================================================
     # SLIDE 13: Model 1 Live Results: Text Generation Showcase
     # =========================================================================
     s13 = prs.slides.add_slide(blank_layout)
@@ -799,217 +829,164 @@ def build_presentation():
     s14 = prs.slides.add_slide(blank_layout)
     add_header(s14, "Model 2: DocumentClassifierNet-v1 (95.9K Params)", 14)
 
-    c_m2_l = add_card(s14, Inches(0.8), Inches(1.3), Inches(5.8), Inches(5.4))
-    tb_m2_l = s14.shapes.add_textbox(Inches(1.0), Inches(1.45), Inches(5.4), Inches(5.1))
+    c_m2_l = add_card(s14, Inches(0.8), Inches(1.35), Inches(5.3), Inches(5.55))
+    tb_m2_l = s14.shapes.add_textbox(Inches(0.95), Inches(1.45), Inches(5.0), Inches(5.3))
     tf_m2_l = tb_m2_l.text_frame
     tf_m2_l.word_wrap = True
 
     p = tf_m2_l.paragraphs[0]
-    p.text = "Neural Classifier Architecture"
-    p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
-    p.font.bold = True
-    p.font.color.rgb = COLOR_PURPLE
-
-    m2_specs = [
-        "Model Type: EmbeddingBag Deep Multi-Layer Perceptron",
-        "Total Trainable Parameters: 95,942 weights",
-        "Embedding Layer: EmbeddingBag(vocab_size=601, embed_dim=128, mode='mean')",
-        "Dense Block 1: Linear(128, 128) -> LayerNorm(128) -> ReLU -> Dropout(p=0.2)",
-        "Dense Block 2: Linear(128, 64) -> LayerNorm(64) -> ReLU",
-        "Classification Head: Linear(64, 6) outputting 6 class logits",
-        "Weight Initialization: Kaiming normal distribution (fan_in mode)",
-        "Training Regimen: 30 epochs with AdamW (lr=1e-3, weight_decay=0.01)"
-    ]
-    for s in m2_specs:
-        p = tf_m2_l.add_paragraph()
-        p.text = f"•  {s}"
-        p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
-        p.font.color.rgb = COLOR_BODY
-        p.space_before = Pt(6)
-
-    c_m2_r = add_card(s14, Inches(6.8), Inches(1.3), Inches(5.7), Inches(5.4), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_m2_r = s14.shapes.add_textbox(Inches(7.0), Inches(1.45), Inches(5.3), Inches(5.1))
-    tf_m2_r = tb_m2_r.text_frame
-    tf_m2_r.word_wrap = True
-
-    p = tf_m2_r.paragraphs[0]
-    p.text = "Mathematical Formulations"
-    p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
-    p.font.bold = True
-    p.font.color.rgb = COLOR_DARK_PURPLE
-
-    m2_math = [
-        ("Mean-Pooled Bag Embedding:", "e = (1 / |D|) sum_{w in D} W_{emb}(w),  where W_{emb} in R^{601 x 128}"),
-        ("Layer 1 Transformation:", "h_1 = Dropout( ReLU( LayerNorm(W_{f1} e + b_{f1}) ), p=0.2 )"),
-        ("Layer 2 Transformation:", "h_2 = ReLU( LayerNorm(W_{f2} h_1 + b_{f2}) )"),
-        ("Softmax Class Probability:", "P(class = c | D) = exp(z_c) / sum_{j=1}^6 exp(z_j)"),
-        ("Extractive Centroid Summarizer:", "Salience(s_i) = (s_i · c) / (||s_i|| · ||c||)\nwhere c is the document centroid embedding vector.")
-    ]
-    for h, b in m2_math:
-        p = tf_m2_r.add_paragraph()
-        p.text = f"•  {h} "
-        p.font.name = 'Times New Roman'
-        p.font.size = Pt(12.5)
-        p.font.bold = True
-        p.font.color.rgb = COLOR_BLACK
-        p.space_before = Pt(6)
-        run = p.add_run()
-        run.text = b
-        run.font.bold = False
-        run.font.color.rgb = COLOR_BODY
-
-    # =========================================================================
-    # SLIDE 15: Model 2 Results: Domain Classification & Salience
-    # =========================================================================
-    s15 = prs.slides.add_slide(blank_layout)
-    add_header(s15, "Model 2 Results: Domain Classification & Salience", 15)
-
-    # 6 Categories performance grid
-    c_m2_res = add_card(s15, Inches(0.8), Inches(1.3), Inches(11.733), Inches(2.7), bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
-    tb_m2_res = s15.shapes.add_textbox(Inches(1.0), Inches(1.4), Inches(11.333), Inches(2.5))
-    tf_m2_res = tb_m2_res.text_frame
-    tf_m2_res.word_wrap = True
-
-    p = tf_m2_res.paragraphs[0]
-    p.text = "Empirical Evaluation Metrics across 6 Domain Classes"
+    p.text = "Classifier Architecture & Math"
     p.font.name = 'Times New Roman'
     p.font.size = Pt(16.5)
     p.font.bold = True
     p.font.color.rgb = COLOR_PURPLE
 
+    m2_specs = [
+        "Model Type: EmbeddingBag Deep Multi-Layer Perceptron",
+        "Total Parameters: 95,942 trained weights (388 KB)",
+        "Embedding Layer: EmbeddingBag(vocab=601, dim=128, mode='mean')",
+        "Dense Block 1: Linear(128, 128) -> LayerNorm -> ReLU -> Dropout(0.2)",
+        "Dense Block 2: Linear(128, 64) -> LayerNorm -> ReLU",
+        "Classification Head: Linear(64, 6) outputting 6 class logits",
+        "Weight Initialization: Kaiming normal distribution (fan_in)",
+        "Mean-Pooled Embedding: e = (1 / |D|) sum_{w in D} W_{emb}(w)",
+        "Extractive Centroid Summarizer: Salience(s_i) = (s_i . c) / (||s_i|| ||c||)",
+        "Softmax Probability: P(c | D) = exp(z_c) / sum_j exp(z_j)"
+    ]
+    for s in m2_specs:
+        p = tf_m2_l.add_paragraph()
+        p.text = f"•  {s}"
+        p.font.name = 'Times New Roman'
+        p.font.size = Pt(11.5)
+        p.font.color.rgb = COLOR_BODY
+        p.space_before = Pt(3.5)
+
+    # Right: Document Classifier Architecture Diagram
+    add_figure_card(
+        s14, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig4_doc_classifier_architecture.png',
+        caption="Figure 4: DocumentClassifierNet-v1 architecture. Processes raw text through tokenization, bag-of-words mean embedding aggregation, normalized non-linear projections, and 6-class softmax classification."
+    )
+# =========================================================================
+    # SLIDE 15: Model 2 Results: Domain Classification & Salience
+    # =========================================================================
+    s15 = prs.slides.add_slide(blank_layout)
+    add_header(s15, "Model 2 Results: Domain Classification & Salience", 15)
+
+    # Left Top: Evaluation Card
+    add_card(s15, Inches(0.8), Inches(1.35), Inches(5.3), Inches(2.8), bg_color=COLOR_BG_CARD, border_color=COLOR_BORDER)
+    tb_m2_res = s15.shapes.add_textbox(Inches(0.95), Inches(1.42), Inches(5.0), Inches(2.6))
+    tf_m2_res = tb_m2_res.text_frame
+    tf_m2_res.word_wrap = True
+
+    p = tf_m2_res.paragraphs[0]
+    p.text = "Empirical Evaluation (6 Domains)"
+    p.font.name = 'Times New Roman'
+    p.font.size = Pt(15)
+    p.font.bold = True
+    p.font.color.rgb = COLOR_PURPLE
+
     p2 = tf_m2_res.add_paragraph()
-    p2.text = "Test Accuracy: 100.0%  •  Test Loss: 0.0017  •  Macro Precision: 1.0000  •  Macro Recall: 1.0000  •  Macro F1-Score: 1.0000"
+    p2.text = "Accuracy: 100%  •  Loss: 0.0017  •  Macro F1: 1.0000"
     p2.font.name = 'Times New Roman'
-    p2.font.size = Pt(14)
+    p2.font.size = Pt(12)
     p2.font.bold = True
     p2.font.color.rgb = COLOR_EMERALD
-    p2.space_before = Pt(3)
+    p2.space_before = Pt(2)
 
     cats = [
-        "1. Technology & Software Engineering: Precision 1.00, Recall 1.00, F1 1.00",
-        "2. Academic Research & Science: Precision 1.00, Recall 1.00, F1 1.00",
-        "3. Business & Product Strategy: Precision 1.00, Recall 1.00, F1 1.00",
-        "4. Finance & Economics: Precision 1.00, Recall 1.00, F1 1.00",
-        "5. Legal, Compliance & Policy: Precision 1.00, Recall 1.00, F1 1.00",
-        "6. Medical & Healthcare Sciences: Precision 1.00, Recall 1.00, F1 1.00"
+        "1. Tech & Software: P 1.00, R 1.00, F1 1.00",
+        "2. Academic & Science: P 1.00, R 1.00, F1 1.00",
+        "3. Business Strategy: P 1.00, R 1.00, F1 1.00",
+        "4. Finance & Economics: P 1.00, R 1.00, F1 1.00",
+        "5. Legal & Compliance: P 1.00, R 1.00, F1 1.00",
+        "6. Medical & Healthcare: P 1.00, R 1.00, F1 1.00"
     ]
     for c in cats:
         p3 = tf_m2_res.add_paragraph()
         p3.text = f"•  {c}"
         p3.font.name = 'Times New Roman'
-        p3.font.size = Pt(12.5)
+        p3.font.size = Pt(10.5)
         p3.font.color.rgb = COLOR_BODY
-        p3.space_before = Pt(2)
+        p3.space_before = Pt(1)
 
-    # Live Test Case Box
-    c_m2_live = add_card(s15, Inches(0.8), Inches(4.2), Inches(11.733), Inches(2.5), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_m2_live = s15.shapes.add_textbox(Inches(1.0), Inches(4.3), Inches(11.333), Inches(2.3))
+    # Left Bottom: Live Verification Output
+    add_card(s15, Inches(0.8), Inches(4.3), Inches(5.3), Inches(2.6), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
+    tb_m2_live = s15.shapes.add_textbox(Inches(0.95), Inches(4.38), Inches(5.0), Inches(2.4))
     tf_m2_live = tb_m2_live.text_frame
     tf_m2_live.word_wrap = True
 
     p = tf_m2_live.paragraphs[0]
-    p.text = "Live Verification Output: Architecture.pdf Analysis"
+    p.text = "Live Verification: Architecture.pdf"
     p.font.name = 'Times New Roman'
-    p.font.size = Pt(16)
+    p.font.size = Pt(14)
     p.font.bold = True
     p.font.color.rgb = COLOR_DARK_PURPLE
 
-    p_in = tf_m2_live.add_paragraph()
-    p_in.text = "Input Text: \"This engineering report covers microservices architecture with Docker, Kubernetes, and PostgreSQL.\""
-    p_in.font.name = 'Times New Roman'
-    p_in.font.size = Pt(13)
-    p_in.font.bold = True
-    p_in.font.color.rgb = COLOR_BLACK
-    p_in.space_before = Pt(2)
-
     live_res = [
-        "Predicted Category: Technology & Software Engineering",
+        "Input: 'Microservices architecture with Docker, Kubernetes, PostgreSQL.'",
+        "Predicted Domain: Technology & Software Engineering",
         "Confidence Score: 98.43%",
-        "Extractive Keypoint: \"Microservices architecture enables horizontal scaling and isolated deployments.\"",
-        "Latency: 31.5 ms end-to-end CPU execution."
+        "Salience Keypoint: Extracted sentence with highest cosine centroid similarity.",
+        "CPU Execution Latency: 31.5 ms end-to-end."
     ]
     for lr in live_res:
         p_res = tf_m2_live.add_paragraph()
         p_res.text = f"✔  {lr}"
         p_res.font.name = 'Times New Roman'
-        p_res.font.size = Pt(12.5)
+        p_res.font.size = Pt(10.5)
         p_res.font.color.rgb = COLOR_BODY
         p_res.space_before = Pt(2)
 
-    # =========================================================================
+    # Right: Confusion Matrix Figure Card
+    add_figure_card(
+        s15, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig5_confusion_matrix.png',
+        caption="Figure 5: Test evaluation confusion matrix heatmap across all 6 professional document domains. Demonstrates 100% diagonal accuracy with zero misclassifications."
+    )
+# =========================================================================
     # SLIDE 16: Custom Model 3: Resume Classifier & ATS Engine
     # =========================================================================
     s16 = prs.slides.add_slide(blank_layout)
     add_header(s16, "Model 3: ResumeDomainClassifierNet-v1 (49.4K)", 16)
 
-    c_m3_l = add_card(s16, Inches(0.8), Inches(1.3), Inches(5.8), Inches(5.4))
-    tb_m3_l = s16.shapes.add_textbox(Inches(1.0), Inches(1.45), Inches(5.4), Inches(5.1))
+    c_m3_l = add_card(s16, Inches(0.8), Inches(1.35), Inches(5.3), Inches(5.55))
+    tb_m3_l = s16.shapes.add_textbox(Inches(0.95), Inches(1.45), Inches(5.0), Inches(5.3))
     tf_m3_l = tb_m3_l.text_frame
     tf_m3_l.word_wrap = True
 
     p = tf_m3_l.paragraphs[0]
-    p.text = "Resume Domain Neural Network"
+    p.text = "Resume Classifier & ATS Equation"
     p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
+    p.font.size = Pt(16.5)
     p.font.bold = True
     p.font.color.rgb = COLOR_PURPLE
 
     m3_specs = [
-        "Parameters: 49,350 trained neural weights",
-        "EmbeddingBag: 128-dim mean-pooled representation across 237 vocabulary terms",
-        "Hidden Structure: 128 -> LayerNorm -> ReLU -> Dropout(0.2) -> 64 -> LayerNorm -> 6 Logits",
-        "6 Technical Career Sectors:",
-        "  1. Full-Stack Web Development",
-        "  2. Machine Learning & Data Science",
-        "  3. Cloud Engineering & DevOps",
-        "  4. Cybersecurity & Infrastructure",
-        "  5. Mobile Application Development",
-        "  6. Product & Engineering Leadership",
-        "Evaluation: 100% test accuracy, test loss 0.0025."
+        "Model Parameters: 49,350 neural weights (204 KB checkpoint)",
+        "EmbeddingBag: 128-dim mean-pooled representation across 237 tokens",
+        "Structure: 128 -> LN -> ReLU -> Dropout(0.2) -> 64 -> LN -> 6 Logits",
+        "6 Technical Career Sectors: Web, ML/Data, Cloud/DevOps, Security, Mobile, Product",
+        "Evaluation: 100% test accuracy, test loss 0.0025 on evaluation splits",
+        "40+ Skill Taxonomy: Regex word-boundary matcher for languages, frameworks, DBs, and cloud tools",
+        "Composite ATS Score Formula: S_ATS = 0.40 * S_skill + 0.25 * S_struct + 0.20 * S_contact + 0.15 * S_metric",
+        "Actionable Guidance: Identifies domain skill gaps to optimize shortlisting"
     ]
     for s in m3_specs:
         p = tf_m3_l.add_paragraph()
         p.text = f"•  {s}"
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
+        p.font.size = Pt(11.5)
         p.font.color.rgb = COLOR_BODY
-        p.space_before = Pt(5)
+        p.space_before = Pt(4)
 
-    c_m3_r = add_card(s16, Inches(6.8), Inches(1.3), Inches(5.7), Inches(5.4), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_m3_r = s16.shapes.add_textbox(Inches(7.0), Inches(1.45), Inches(5.3), Inches(5.1))
-    tf_m3_r = tb_m3_r.text_frame
-    tf_m3_r.word_wrap = True
-
-    p = tf_m3_r.paragraphs[0]
-    p.text = "Skill Taxonomy & ATS Formulation"
-    p.font.name = 'Times New Roman'
-    p.font.size = Pt(18)
-    p.font.bold = True
-    p.font.color.rgb = COLOR_DARK_PURPLE
-
-    m3_math = [
-        ("40+ Skill Taxonomy Ontology:", "Regex-based word-boundary extraction for languages (Python, Java, TS), frameworks (React, Node, Express), cloud (Docker, AWS, K8s), databases (Postgres, MongoDB)."),
-        ("Composite ATS Score Equation:", "S_ATS = w_skill · (min(|S_matched|, 10) / 10 · 100) + w_struct · C_struct + w_contact · C_contact + w_metric · C_metric"),
-        ("Multi-Attribute Weights:", "• w_skill = 0.40 (Technical Skill Density)\n• w_struct = 0.25 (Education, Experience, Projects)\n• w_contact = 0.20 (Email, Phone, GitHub/LinkedIn)\n• w_metric = 0.15 (Quantified metric bullet points)"),
-        ("Tailored Gap Recommendations:", "Generates missing domain keywords to maximize interview shortlisting chances.")
-    ]
-    for h, b in m3_math:
-        p = tf_m3_r.add_paragraph()
-        p.text = f"•  {h} "
-        p.font.name = 'Times New Roman'
-        p.font.size = Pt(12.5)
-        p.font.bold = True
-        p.font.color.rgb = COLOR_BLACK
-        p.space_before = Pt(6)
-        run = p.add_run()
-        run.text = b
-        run.font.bold = False
-        run.font.color.rgb = COLOR_BODY
-
-    # =========================================================================
+    # Right: Resume Intelligence Pipeline Diagram
+    add_figure_card(
+        s16, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig6_resume_pipeline.png',
+        caption="Figure 6: Multi-Stage Autonomous Resume Intelligence Pipeline. Illustrates raw resume ingestion, neural domain classification, 40+ skill ontology matching, and 4-factor composite ATS scoring."
+    )
+# =========================================================================
     # SLIDE 17: Model 3 Results: Skill Matching & ATS Scoring
     # =========================================================================
     s17 = prs.slides.add_slide(blank_layout)
@@ -1240,17 +1217,18 @@ def build_presentation():
     s21 = prs.slides.add_slide(blank_layout)
     add_header(s21, "Latency, Throughput & CPU Efficiency Benchmarks", 21)
 
+    # Left Top: Latency Table
     rows, cols = 5, 4
-    left, top, width, height = Inches(0.8), Inches(1.4), Inches(11.733), Inches(3.3)
+    left, top, width, height = Inches(0.8), Inches(1.35), Inches(5.3), Inches(2.7)
     t_shape = s21.shapes.add_table(rows, cols, left, top, width, height)
     tbl = t_shape.table
 
-    tbl.columns[0].width = Inches(3.5)
-    tbl.columns[1].width = Inches(2.7)
-    tbl.columns[2].width = Inches(2.7)
-    tbl.columns[3].width = Inches(2.833)
+    tbl.columns[0].width = Inches(1.8)
+    tbl.columns[1].width = Inches(1.1)
+    tbl.columns[2].width = Inches(1.3)
+    tbl.columns[3].width = Inches(1.1)
 
-    bheaders = ["API Endpoint / Operation", "Cold-Start Latency", "Warm Latency (Mean +- SD)", "Peak Memory (RAM)"]
+    bheaders = ["Endpoint", "Cold", "Warm (Mean)", "RAM"]
     for c_i, ht in enumerate(bheaders):
         cell = tbl.cell(0, c_i)
         cell.text = ht
@@ -1258,16 +1236,16 @@ def build_presentation():
         cell.fill.fore_color.rgb = RGBColor(30, 41, 59)
         p = cell.text_frame.paragraphs[0]
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
+        p.font.size = Pt(11)
         p.font.bold = True
         p.font.color.rgb = COLOR_WHITE
         p.alignment = PP_ALIGN.CENTER
 
     b_data = [
-        ["GET /health (Diagnostic telemetry)", "12 ms", "1.8 ms +- 0.3 ms", "85 MB"],
-        ["POST /generate (50 tokens generated)", "148 ms", "84.2 ms +- 6.1 ms", "278 MB"],
-        ["POST /analyze-document (PDF/DOCX)", "76 ms", "31.5 ms +- 2.4 ms", "142 MB"],
-        ["POST /analyze-resume (Domain + ATS)", "82 ms", "38.7 ms +- 3.1 ms", "156 MB"]
+        ["GET /health", "12 ms", "1.8 ms", "85 MB"],
+        ["POST /generate", "148 ms", "84.2 ms", "278 MB"],
+        ["POST /analyze-doc", "76 ms", "31.5 ms", "142 MB"],
+        ["POST /analyze-resume", "82 ms", "38.7 ms", "156 MB"]
     ]
     for r_i, r_data in enumerate(b_data):
         bg = RGBColor(248, 250, 252) if r_i % 2 == 0 else COLOR_WHITE
@@ -1278,52 +1256,64 @@ def build_presentation():
             cell.fill.fore_color.rgb = bg
             p = cell.text_frame.paragraphs[0]
             p.font.name = 'Times New Roman'
-            p.font.size = Pt(12.5)
+            p.font.size = Pt(10.5)
             p.font.color.rgb = COLOR_BLACK
             p.alignment = PP_ALIGN.LEFT if c_i == 0 else PP_ALIGN.CENTER
 
-    c_be = add_card(s21, Inches(0.8), Inches(5.0), Inches(11.733), Inches(1.8), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
-    tb_be = s21.shapes.add_textbox(Inches(1.0), Inches(5.1), Inches(11.333), Inches(1.6))
+    # Left Bottom: Efficiency Highlights
+    add_card(s21, Inches(0.8), Inches(4.2), Inches(5.3), Inches(2.7), bg_color=RGBColor(245, 243, 255), border_color=RGBColor(221, 214, 254))
+    tb_be = s21.shapes.add_textbox(Inches(0.95), Inches(4.28), Inches(5.0), Inches(2.5))
     tf_be = tb_be.text_frame
     tf_be.word_wrap = True
 
     p = tf_be.paragraphs[0]
-    p.text = "Key Empirical Performance Highlights:"
+    p.text = "CPU Efficiency Highlights"
     p.font.name = 'Times New Roman'
-    p.font.size = Pt(15.5)
+    p.font.size = Pt(14)
     p.font.bold = True
     p.font.color.rgb = COLOR_DARK_PURPLE
 
     h_pts = [
-        "1. Instantaneous Warm Response: Token generation generates ~1.68 ms per token on standard CPU compute.",
-        "2. Ultra-Lightweight Footprint: Entire inference service runs in <300 MB RAM, easily deployed on low-cost virtual servers.",
-        "3. Interactive Real-Time Feedback: Document and resume parsing complete in under 40 ms, delivering immediate UI updates."
+        ("Sub-100ms Inference:", "Warm text generation executes in 84.2 ms (~1.68 ms/token) on commodity 16-thread CPU."),
+        ("Ultra-Lightweight Footprint:", "Peak server RAM usage remains under 300 MB across all 3 deep learning models."),
+        ("Immediate UI Feedback:", "Document and resume classification return in under 40 ms, enabling instant responsive UX.")
     ]
-    for hp in h_pts:
+    for hp, hd in h_pts:
         p = tf_be.add_paragraph()
-        p.text = hp
+        p.text = f"• {hp} "
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(13)
-        p.font.color.rgb = COLOR_BODY
+        p.font.size = Pt(11)
+        p.font.bold = True
+        p.font.color.rgb = COLOR_BLACK
         p.space_before = Pt(3)
+        run = p.add_run()
+        run.text = hd
+        run.font.bold = False
+        run.font.color.rgb = COLOR_BODY
 
-    # =========================================================================
+    # Right: Latency Benchmark Figure Card
+    add_figure_card(
+        s21, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig7_latency_benchmark.png',
+        caption="Figure 7: Empirical latency benchmarks comparing cold-start and warm CPU inference across all three custom deep learning endpoints on standard commodity hardware."
+    )
+# =========================================================================
     # SLIDE 22: Comparative Paradigm Analysis
     # =========================================================================
     s22 = prs.slides.add_slide(blank_layout)
     add_header(s22, "Comparative Paradigm Analysis", 22)
 
-    rows, cols = 6, 4
-    left, top, width, height = Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.2)
+    # Left: Paradigm Table
+    rows, cols = 6, 3
+    left, top, width, height = Inches(0.8), Inches(1.35), Inches(5.3), Inches(5.55)
     t_shape = s22.shapes.add_table(rows, cols, left, top, width, height)
     tbl = t_shape.table
 
-    tbl.columns[0].width = Inches(2.6)
-    tbl.columns[1].width = Inches(2.9)
-    tbl.columns[2].width = Inches(2.9)
-    tbl.columns[3].width = Inches(3.333)
+    tbl.columns[0].width = Inches(1.5)
+    tbl.columns[1].width = Inches(1.9)
+    tbl.columns[2].width = Inches(1.9)
 
-    cp_headers = ["Evaluation Metric", "Commercial APIs (OpenAI/Gemini)", "Heavy Foundation LLMs (Llama-3)", "Our Custom In-House Neural AI"]
+    cp_headers = ["Metric", "Commercial API Wrappers", "Our Sovereign In-House AI"]
     for c_i, ht in enumerate(cp_headers):
         cell = tbl.cell(0, c_i)
         cell.text = ht
@@ -1331,17 +1321,17 @@ def build_presentation():
         cell.fill.fore_color.rgb = RGBColor(30, 41, 59)
         p = cell.text_frame.paragraphs[0]
         p.font.name = 'Times New Roman'
-        p.font.size = Pt(12.5)
+        p.font.size = Pt(11)
         p.font.bold = True
         p.font.color.rgb = COLOR_WHITE
         p.alignment = PP_ALIGN.CENTER
 
     cp_rows = [
-        ["Data Privacy", "Poor (Data sent to 3rd-party cloud)", "High (Self-hosted)", "100% Sovereign (Zero network leakage)"],
-        ["Operating Cost", "High (Continuous per-token billing)", "Extreme (Multi-GPU server hosting)", "Negligible (Runs on commodity CPU)"],
-        ["External Dependency", "Total (Vulnerable to outages & limits)", "None", "None (Zero external AI APIs)"],
-        ["Hardware Demands", "Minimal (Internet connection only)", "Prohibitive (48GB+ GPU VRAM)", "Modest (<300 MB RAM, 100% CPU)"],
-        ["Pretrained Weight Bias", "Opaque & uncontrollable", "Complex RLHF alignment required", "None (Trained from random weights)"]
+        ["Data Privacy", "Poor (Sent to 3rd-party clouds)", "100% Sovereign (Zero network egress)"],
+        ["Operating Cost", "High (Continuous token billing)", "Negligible (Runs on commodity CPU)"],
+        ["External Dependency", "Total (Vulnerable to outages)", "None (Zero external AI APIs)"],
+        ["Hardware Needs", "Modest client, cloud GPU needed", "Modest (<300 MB RAM, 100% CPU)"],
+        ["Weight Ownership", "Opaque & uncontrollable", "Fully owned (Trained from scratch)"]
     ]
     for r_i, r_data in enumerate(cp_rows):
         bg = RGBColor(248, 250, 252) if r_i % 2 == 0 else COLOR_WHITE
@@ -1352,14 +1342,20 @@ def build_presentation():
             cell.fill.fore_color.rgb = bg
             p = cell.text_frame.paragraphs[0]
             p.font.name = 'Times New Roman'
-            p.font.size = Pt(12)
+            p.font.size = Pt(10.5)
             p.font.color.rgb = COLOR_BLACK
             p.alignment = PP_ALIGN.LEFT if c_i == 0 else PP_ALIGN.CENTER
-            if c_i == 3:
+            if c_i == 2:
                 p.font.bold = True
                 p.font.color.rgb = COLOR_PURPLE
 
-    # =========================================================================
+    # Right: Paradigm Comparison Chart Figure Card
+    add_figure_card(
+        s22, Inches(6.3), Inches(1.35), Inches(6.233), Inches(5.55),
+        'report_figures/fig8_paradigm_comparison.png',
+        caption="Figure 8: Sovereign In-House AI SaaS vs. Commercial API Wrapper SaaS paradigm comparison. Validates complete data sovereignty, zero operational costs, and high engineering rigor."
+    )
+# =========================================================================
     # SLIDE 23: Security, Multi-Tenancy & Data Protection
     # =========================================================================
     s23 = prs.slides.add_slide(blank_layout)
