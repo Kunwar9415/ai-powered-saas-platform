@@ -60,7 +60,7 @@ export const getProviders = async (req, res, next) => {
  */
 export const generate = async (req, res, next) => {
   try {
-    const { prompt, systemPrompt, temperature, maxTokens, model } = req.body;
+    const { prompt, provider, systemPrompt, temperature, maxTokens, model } = req.body;
     const userId = req.user?.id || 'usr_guest';
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
@@ -70,12 +70,13 @@ export const generate = async (req, res, next) => {
       });
     }
 
-    logger.info(`Processing custom AI generation request for user [${userId}]`);
+    logger.info(`Processing hybrid AI generation request for user [${userId}]`);
 
     let aiResult;
     try {
-      aiResult = await localAIService.generateText({
+      aiResult = await aiRouter.generateText({
         prompt: prompt.trim(),
+        provider,
         systemPrompt,
         temperature: temperature !== undefined ? parseFloat(temperature) : 0.7,
         maxTokens: maxTokens ? parseInt(maxTokens, 10) : 150,
@@ -85,7 +86,7 @@ export const generate = async (req, res, next) => {
       const statusCode = aiErr.statusCode || (aiErr.isCustomAiUnavailable ? 503 : 500);
       return res.status(statusCode).json({
         success: false,
-        message: aiErr.message || 'Custom AI generation failure.',
+        message: aiErr.message || 'AI generation failure.',
       });
     }
 
@@ -97,12 +98,12 @@ export const generate = async (req, res, next) => {
         toolType: 'text',
         prompt: prompt.trim(),
         result: aiResult.text,
-        provider: aiResult.provider || 'custom_ai',
+        provider: aiResult.provider || 'gemini',
         metadata: {
           model: aiResult.model,
           usage: aiResult.usage,
           temperature,
-          isLocal: true,
+          isLocal: aiResult.isLocal !== false,
         },
       });
     } catch (dbErr) {
@@ -111,13 +112,13 @@ export const generate = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Text generated successfully via custom AI model!',
+      message: 'Text generated successfully!',
       data: {
         result: aiResult.text,
-        provider: aiResult.provider || 'custom_ai',
+        provider: aiResult.provider || 'gemini',
         model: aiResult.model,
         usage: aiResult.usage,
-        isLocal: true,
+        isLocal: aiResult.isLocal !== false,
         generationId: generationRecord?.id || 'gen_' + Date.now(),
       },
     });
@@ -133,7 +134,7 @@ export const generate = async (req, res, next) => {
  */
 export const generateText = async (req, res, next) => {
   try {
-    const { prompt, provider = 'custom_ai', systemPrompt, temperature, maxTokens, model } = req.body;
+    const { prompt, provider, systemPrompt, temperature, maxTokens, model } = req.body;
     const userId = req.user?.id || 'usr_guest';
 
     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
@@ -143,12 +144,13 @@ export const generateText = async (req, res, next) => {
       });
     }
 
-    logger.info(`Generating text for user [${userId}] via custom AI engine`);
+    logger.info(`Generating text for user [${userId}] via Hybrid AI Router`);
 
     let aiResult;
     try {
-      aiResult = await localAIService.generateText({
+      aiResult = await aiRouter.generateText({
         prompt: prompt.trim(),
+        provider,
         systemPrompt,
         temperature: temperature !== undefined ? parseFloat(temperature) : 0.7,
         maxTokens: maxTokens ? parseInt(maxTokens, 10) : 150,
@@ -158,7 +160,7 @@ export const generateText = async (req, res, next) => {
       const statusCode = aiErr.statusCode || (aiErr.isCustomAiUnavailable ? 503 : 500);
       return res.status(statusCode).json({
         success: false,
-        message: aiErr.message || 'Custom AI server is unavailable. Please ensure python ai-model/api/server.py is running.',
+        message: aiErr.message || 'AI service is unavailable.',
       });
     }
 
@@ -167,12 +169,12 @@ export const generateText = async (req, res, next) => {
       toolType: 'text',
       prompt: prompt.trim(),
       result: aiResult.text,
-      provider: aiResult.provider || 'custom_ai',
+      provider: aiResult.provider || 'gemini',
       metadata: {
         model: aiResult.model,
         usage: aiResult.usage,
         temperature,
-        isLocal: true,
+        isLocal: aiResult.isLocal !== false,
       },
     });
 
@@ -180,13 +182,13 @@ export const generateText = async (req, res, next) => {
       res,
       {
         result: aiResult.text,
-        provider: aiResult.provider || 'custom_ai',
+        provider: aiResult.provider || 'gemini',
         model: aiResult.model,
         usage: aiResult.usage,
-        isLocal: true,
+        isLocal: aiResult.isLocal !== false,
         generationId: generationRecord?.id || 'gen_' + Date.now(),
       },
-      'Text generated successfully via custom AI model!'
+      'Text generated successfully!'
     );
   } catch (error) {
     logger.error('Text generation failed:', error.message);

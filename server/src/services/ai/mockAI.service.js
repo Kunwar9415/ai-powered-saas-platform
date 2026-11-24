@@ -99,6 +99,11 @@ export class MockAIService {
       ],
       wordCount,
       sentiment: 'Objective & Technical',
+      category: 'Technology & Software Engineering',
+      categoryConfidence: 96.5,
+      provider: 'gemini',
+      model: 'gemini-1.5-flash',
+      isLocal: false,
     };
   }
 
@@ -111,16 +116,37 @@ export class MockAIService {
       'AWS', 'REST APIs', 'GraphQL', 'Tailwind CSS', 'Next.js', 'Prisma', 'Machine Learning', 'Data Structures', 'System Design'
     ];
 
-    const detectedSkills = commonSkills.filter((skill) =>
-      new RegExp(`\\b${skill}\\b`, 'i').test(text)
-    );
+    const detectedSkills = commonSkills.filter((skill) => {
+      const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\b${escaped}\\b`, 'i').test(text);
+    });
 
     const skills = detectedSkills.length > 0 ? detectedSkills : ['Full-Stack Development', 'REST APIs', 'Software Engineering', 'Database Management', 'Git', 'Problem Solving'];
 
+    const role = /front\s*end|react|ui/i.test(text)
+      ? 'Frontend / UI Engineer'
+      : /backend|node|express|api|database/i.test(text)
+      ? 'Full-Stack Web Development'
+      : /ai|machine learning|data/i.test(text)
+      ? 'Machine Learning & Data Science'
+      : 'Full-Stack Web Development';
+
     return {
+      detectedDomain: role,
+      domainConfidence: '95.4%',
+      atsScore: Math.min(Math.max(skills.length * 10 + 25, 45), 92),
+      allSkills: skills,
+      matchedSkills: skills.slice(0, 4),
+      missingSkills: [
+        'Cloud Infrastructure & CI/CD Pipelines (Docker, AWS)',
+        'Automated Testing Frameworks (Jest, Vitest)',
+      ],
+      model: 'ResumeDomainClassifierNet-v1',
+      provider: 'custom_ai',
+      isLocal: true,
       candidateOverview: {
         documentName: fileName,
-        detectedRole: /front\s*end|react|ui/i.test(text) ? 'Frontend / UI Engineer' : /backend|node|express|api|database/i.test(text) ? 'Full-Stack / Backend Engineer' : /ai|machine learning|data/i.test(text) ? 'AI / Software Engineer' : 'Full-Stack Software Engineer',
+        detectedRole: role,
         experienceLevel: /senior|lead|years|experienced/i.test(text) ? 'Mid-to-Senior Level' : 'Entry-to-Mid Level',
       },
       skillsIdentified: skills,
